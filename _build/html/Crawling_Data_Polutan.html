@@ -1,0 +1,858 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Business Understanding: Analisis dan Pemantauan Kualitas Udara Lokal &#8212; My sample book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Crawling_Data_Polutan';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="WELCOME TO MY NOTEBOOK" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="My sample book - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    WELCOME TO MY NOTEBOOK
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Business Understanding: Analisis dan Pemantauan Kualitas Udara Lokal</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FCrawling_Data_Polutan.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/Crawling_Data_Polutan.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Business Understanding: Analisis dan Pemantauan Kualitas Udara Lokal</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latar-belakang">1. Latar Belakang</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tujuan-bisnis-business-objectives">2. Tujuan Bisnis (Business Objectives)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manfaat-business-benefits">3. Manfaat (Business Benefits)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-bagi-masyarakat-umum-public-health">A. Bagi Masyarakat Umum (Public &amp; Health)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-bagi-pemerintah-dan-pembuat-kebijakan-government-policy-makers">B. Bagi Pemerintah dan Pembuat Kebijakan (Government &amp; Policy Makers)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-bagi-sektor-bisnis-dan-industri-private-sector">C. Bagi Sektor Bisnis dan Industri (Private Sector)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-bagi-akademisi-dan-peneliti">D. Bagi Akademisi dan Peneliti</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="business-understanding-analisis-dan-pemantauan-kualitas-udara-lokal">
+<h1>Business Understanding: Analisis dan Pemantauan Kualitas Udara Lokal<a class="headerlink" href="#business-understanding-analisis-dan-pemantauan-kualitas-udara-lokal" title="Link to this heading">#</a></h1>
+<section id="latar-belakang">
+<h2>1. Latar Belakang<a class="headerlink" href="#latar-belakang" title="Link to this heading">#</a></h2>
+<p>Seiring dengan peningkatan urbanisasi, aktivitas industri, dan volume kendaraan bermotor, kualitas udara di berbagai daerah mengalami penurunan yang signifikan. Penurunan kualitas udara ini berbanding lurus dengan peningkatan risiko kesehatan masyarakat dan kerusakan lingkungan. Oleh karena itu, tugas untuk mengetahui, menganalisis, dan memantau kualitas udara di daerah masing-masing menjadi sangat krusial sebagai langkah mitigasi awal dan dasar pengambilan keputusan strategis.</p>
+</section>
+<section id="tujuan-bisnis-business-objectives">
+<h2>2. Tujuan Bisnis (Business Objectives)<a class="headerlink" href="#tujuan-bisnis-business-objectives" title="Link to this heading">#</a></h2>
+<p>Tugas pemantauan dan analisis kualitas udara (khususnya untuk polutan seperti NO2, CO, dan SO2) memiliki beberapa tujuan utama:</p>
+<ul class="simple">
+<li><p><strong>Pemantauan Kondisi Lingkungan:</strong> Mendapatkan gambaran yang akurat, terukur, dan <em>real-time</em> atau historis mengenai tingkat polusi udara di suatu wilayah spesifik (misalnya tingkat emisi di tingkat kabupaten/kota).</p></li>
+<li><p><strong>Identifikasi Tren dan Pola:</strong> Mengetahui kapan dan di mana lonjakan polutan sering terjadi (misalnya saat jam sibuk, musim kemarau, atau di sekitar kawasan industri).</p></li>
+<li><p><strong>Peringatan Dini (Early Warning System):</strong> Menciptakan dasar sistem informasi yang dapat memberikan peringatan kepada masyarakat ketika kualitas udara mencapai level berbahaya.</p></li>
+<li><p><strong>Evaluasi Kebijakan:</strong> Mengukur efektivitas kebijakan lingkungan yang sudah berjalan, seperti pembatasan kendaraan bermotor atau penegakan standar emisi pabrik.</p></li>
+</ul>
+</section>
+<section id="manfaat-business-benefits">
+<h2>3. Manfaat (Business Benefits)<a class="headerlink" href="#manfaat-business-benefits" title="Link to this heading">#</a></h2>
+<p>Mengetahui kualitas udara di daerah masing-masing memberikan dampak positif (manfaat) bagi berbagai pemangku kepentingan (<em>stakeholders</em>):</p>
+<section id="a-bagi-masyarakat-umum-public-health">
+<h3>A. Bagi Masyarakat Umum (Public &amp; Health)<a class="headerlink" href="#a-bagi-masyarakat-umum-public-health" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Perlindungan Kesehatan:</strong> Masyarakat dapat menyesuaikan aktivitas harian mereka (misalnya mengurangi aktivitas di luar ruangan atau menggunakan masker) saat tingkat polusi tinggi, sehingga mengurangi risiko penyakit pernapasan (ISPA, asma).</p></li>
+<li><p><strong>Peningkatan Kualitas Hidup:</strong> Udara yang terpantau dan dikelola dengan baik akan menciptakan lingkungan tempat tinggal yang lebih sehat dan nyaman.</p></li>
+</ul>
+</section>
+<section id="b-bagi-pemerintah-dan-pembuat-kebijakan-government-policy-makers">
+<h3>B. Bagi Pemerintah dan Pembuat Kebijakan (Government &amp; Policy Makers)<a class="headerlink" href="#b-bagi-pemerintah-dan-pembuat-kebijakan-government-policy-makers" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Dasar Pembuatan Regulasi (Data-Driven Policy):</strong> Memberikan bukti empiris (<em>evidence-based</em>) untuk merumuskan kebijakan publik, seperti penataan kawasan industri, perluasan ruang terbuka hijau (RTH), atau manajemen rekayasa lalu lintas.</p></li>
+<li><p><strong>Target Pembangunan Berkelanjutan (SDGs):</strong> Membantu pemerintah daerah dalam mencapai target <em>Sustainable Development Goals</em>, khususnya terkait Kota dan Komunitas yang Berkelanjutan (SDG 11) serta Penanganan Perubahan Iklim (SDG 13).</p></li>
+</ul>
+</section>
+<section id="c-bagi-sektor-bisnis-dan-industri-private-sector">
+<h3>C. Bagi Sektor Bisnis dan Industri (Private Sector)<a class="headerlink" href="#c-bagi-sektor-bisnis-dan-industri-private-sector" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Kepatuhan Lingkungan (ESG Compliance):</strong> Membantu perusahaan dalam memantau emisi mereka sendiri untuk memastikan kepatuhan terhadap standar regulasi lingkungan yang berlaku (Environmental, Social, and Governance).</p></li>
+<li><p><strong>Peluang Inovasi:</strong> Membuka peluang pasar baru untuk produk kesehatan dan lingkungan, seperti alat pembersih udara (<em>air purifier</em>), masker kesehatan khusus, atau sistem ventilasi gedung yang cerdas.</p></li>
+</ul>
+</section>
+<section id="d-bagi-akademisi-dan-peneliti">
+<h3>D. Bagi Akademisi dan Peneliti<a class="headerlink" href="#d-bagi-akademisi-dan-peneliti" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Ketersediaan Data Riset:</strong> Menyediakan dataset yang valid dan kaya untuk keperluan penelitian lanjutan terkait dampak perubahan iklim, kesehatan masyarakat, dan meteorologi.</p></li>
+</ul>
+<p>Menginstal pustaka Python openeo beserta seluruh dependensinya (seperti pystac, xarray, dll.) menggunakan perintah pip.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">openeo</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>^C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: you may need to restart the kernel to use updated packages.
+Collecting openeo
+  Downloading openeo-0.51.0-py3-none-any.whl.metadata (8.9 kB)
+Requirement already satisfied: requests&gt;=2.26.0 in C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages (from openeo) (2.32.5)
+Requirement already satisfied: urllib3&gt;=1.9.0 in C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages (from openeo) (2.6.3)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mengimpor pustaka openeo ke dalam environment agar fungsinya dapat digunakan.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">openeo</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Membuat koneksi ke server OpenEO Copernicus Data Space (<a class="reference external" href="http://openeo.dataspace.copernicus.eu">openeo.dataspace.copernicus.eu</a>) dan melakukan proses autentikasi pengguna menggunakan metode OpenID Connect (OIDC).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">openeo</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;openeo.dataspace.copernicus.eu&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">authenticate_oidc</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">Visit <a href="https://identity.dataspace.copernicus.eu/auth/realms/CDSE/device?user_code=FIWF-MKAN" title="Authenticate at https://identity.dataspace.copernicus.eu/auth/realms/CDSE/device?user_code=FIWF-MKAN" target="_blank" rel="noopener noreferrer">https://identity.dataspace.copernicus.eu/auth/realms/CDSE/device?user_code=FIWF-MKAN</a> <a href="#" onclick="navigator.clipboard.writeText('https://identity.dataspace.copernicus.eu/auth/realms/CDSE/device?user_code=FIWF-MKAN');return false;" title="Copy authentication URL to clipboard">&#128203;</a> to authenticate.</div><div class="output text_html">✅ Authorized successfully</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Authenticated using device code flow.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mendefinisikan Area of Interest (AOI) berupa poligon koordinat, lalu memuat koleksi data satelit SENTINEL_5P_L2 untuk variabel gas NO2, CO, dan SO2 pada rentang waktu 1 Januari 2025 hingga 26 Agustus 2026. Data tersebut kemudian diagregasi menjadi rata-rata harian secara temporal, serta dirata-rata secara spasial sesuai batas area AOI.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">aoi</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mf">113.09</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.89</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">112.68</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.89</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">112.68</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.20</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">113.09</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.20</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">113.09</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.89</span><span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">s5NO2</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">load_collection</span><span class="p">(</span>
+    <span class="s2">&quot;SENTINEL_5P_L2&quot;</span><span class="p">,</span>
+    <span class="n">temporal_extent</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;2025-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2026-08-26&quot;</span><span class="p">],</span>
+    <span class="n">spatial_extent</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="mf">112.68</span><span class="p">,</span>
+        <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">7.20</span><span class="p">,</span>
+        <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="mf">113.09</span><span class="p">,</span>
+        <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">6.89</span>
+    <span class="p">},</span>
+    <span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NO2&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">s5CO</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">load_collection</span><span class="p">(</span>
+    <span class="s2">&quot;SENTINEL_5P_L2&quot;</span><span class="p">,</span>
+    <span class="n">temporal_extent</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;2025-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2026-08-26&quot;</span><span class="p">],</span>
+    <span class="n">spatial_extent</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="mf">112.68</span><span class="p">,</span>
+        <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">7.20</span><span class="p">,</span>
+        <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="mf">113.09</span><span class="p">,</span>
+        <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">6.89</span>
+    <span class="p">},</span>
+    <span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CO&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">s5SO2</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">load_collection</span><span class="p">(</span>
+    <span class="s2">&quot;SENTINEL_5P_L2&quot;</span><span class="p">,</span>
+    <span class="n">temporal_extent</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;2025-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2026-08-26&quot;</span><span class="p">],</span>
+    <span class="n">spatial_extent</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="mf">112.68</span><span class="p">,</span>
+        <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">7.20</span><span class="p">,</span>
+        <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="mf">113.09</span><span class="p">,</span>
+        <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">6.89</span>
+    <span class="p">},</span>
+    <span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SO2&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Now aggregate by day to avoid having multiple data per day</span>
+<span class="n">s5p_NO2_daily</span> <span class="o">=</span> <span class="n">s5NO2</span><span class="o">.</span><span class="n">aggregate_temporal_period</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+<span class="n">s5p_CO_daily</span> <span class="o">=</span> <span class="n">s5CO</span><span class="o">.</span><span class="n">aggregate_temporal_period</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+<span class="n">s5p_SO2_daily</span> <span class="o">=</span> <span class="n">s5SO2</span><span class="o">.</span><span class="n">aggregate_temporal_period</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+
+<span class="c1"># Now create a spatial aggregation to generate mean timeseries data</span>
+<span class="n">s5p_NO2_aoi</span> <span class="o">=</span> <span class="n">s5p_NO2_daily</span><span class="o">.</span><span class="n">aggregate_spatial</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">aoi</span><span class="p">)</span>
+<span class="n">s5p_CO_aoi</span> <span class="o">=</span> <span class="n">s5p_CO_daily</span><span class="o">.</span><span class="n">aggregate_spatial</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">aoi</span><span class="p">)</span>
+<span class="n">s5p_SO2_aoi</span> <span class="o">=</span> <span class="n">s5p_SO2_daily</span><span class="o">.</span><span class="n">aggregate_spatial</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">geometries</span><span class="o">=</span><span class="n">aoi</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Menjalankan proses (batch job) di server untuk mengeksekusi data NO2, CO, SO2 yang telah diagregasi, dan mengunduh hasilnya ke dalam file format NetCDF</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">s5p_NO2_aoi</span><span class="o">.</span><span class="n">execute_batch</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;NO2 in Bangkalan terkini&quot;</span><span class="p">,</span> <span class="n">outputfile</span><span class="o">=</span><span class="s2">&quot;NO2Bangkalan Terkini.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0:00:00 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: send &#39;start&#39;
+0:00:03 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:00:08 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:00:14 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:00:22 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:00:32 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:00:45 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:01:00 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:01:20 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: queued (progress 0%)
+0:01:44 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: running (progress N/A)
+0:02:14 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: running (progress N/A)
+0:02:51 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: running (progress N/A)
+0:03:38 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: running (progress N/A)
+0:04:36 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: running (progress N/A)
+0:05:37 Job &#39;j-260827085655455789baa71b8342d0c9&#39;: finished (progress 100%)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">s5CO</span><span class="o">.</span><span class="n">execute_batch</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;CO in Bangkalan terkini&quot;</span><span class="p">,</span> <span class="n">outputfile</span><span class="o">=</span><span class="s2">&quot;COBangkalan Terkini.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0:00:00 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: send &#39;start&#39;
+0:00:03 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: created (progress 0%)
+0:00:09 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:00:15 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:00:23 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:00:33 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:00:45 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:01:01 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: queued (progress 0%)
+0:01:20 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:01:44 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:02:14 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:02:52 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:03:38 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:04:37 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: running (progress N/A)
+0:05:37 Job &#39;j-260827090238499aade5f9d4a5240270&#39;: finished (progress 100%)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">s5SO2</span><span class="o">.</span><span class="n">execute_batch</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;SO2 in Bangkalan terkini&quot;</span><span class="p">,</span> <span class="n">outputfile</span><span class="o">=</span><span class="s2">&quot;SO2Bangkalan Terkini.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0:00:00 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: send &#39;start&#39;
+0:00:02 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: created (progress 0%)
+0:00:07 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: queued (progress 0%)
+0:00:14 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: queued (progress 0%)
+0:00:22 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: queued (progress 0%)
+0:00:32 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: queued (progress 0%)
+0:00:44 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: queued (progress 0%)
+0:01:00 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: running (progress N/A)
+0:01:19 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: running (progress N/A)
+0:01:43 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: running (progress N/A)
+0:02:13 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: running (progress N/A)
+0:02:51 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: running (progress N/A)
+0:03:38 Job &#39;j-2608270908214bc5973a8b286d083ad8&#39;: finished (progress 100%)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Menginstal pustaka netCDF4 yang diperlukan untuk membaca dan memanipulasi file dengan ekstensi .nc di Python.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">netCDF4</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mengimpor pustaka analisis data (netCDF4, numpy, pandas) dan membaca ketiga file NetCDF (NO2, CO, SO2) yang baru saja diunduh ke dalam variabel dataset masing-masing (dsNO2, dsCO, dsSO2)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">dsNO2</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;NO2Bangkalan Terkini.nc&quot;</span><span class="p">)</span>
+<span class="n">dsCO</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;COBangkalan Terkini.nc&quot;</span><span class="p">)</span>
+<span class="n">dsSO2</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;SO2Bangkalan Terkini.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mencetak (menampilkan) daftar keys atau variabel penyusun apa saja yang terdapat di dalam struktur data dataset CO.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📦 Variabel dalam file:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dsCO</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>📦 Variabel dalam file:
+dict_keys([&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;crs&#39;, &#39;CO&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mengekstrak nilai kadar NO2, CO, SO2 dan nilai waktu (t) dari dataset NO2. Kode ini kemudian mengubah format waktu menjadi tanggal string (YYYY-MM-DD), menyusunnya menjadi struktur tabel DataFrame menggunakan Pandas, dan mengekspornya menjadi file CSV.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">no2</span> <span class="o">=</span> <span class="n">dsNO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;NO2&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">timeNO2</span> <span class="o">=</span> <span class="n">dsNO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][:]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">time_units</span> <span class="o">=</span> <span class="n">dsNO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">timeNO2</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">time_units</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">timeNO2</span>  <span class="c1"># fallback kalau tidak ada units</span>
+
+<span class="n">new_dates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)):</span>
+    <span class="c1"># ubah format datetime</span>
+    <span class="n">new_date</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">new_dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_date</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">new_dates</span><span class="p">,</span>
+    <span class="s2">&quot;NO2&quot;</span><span class="p">:</span> <span class="n">no2</span>
+<span class="p">})</span>
+
+<span class="c1"># Simpan ke CSV</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;NO2_Bangkalan_timeseries_terkini.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">co</span> <span class="o">=</span> <span class="n">dsCO</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;CO&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">timeCO</span> <span class="o">=</span> <span class="n">dsCO</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][:]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">time_units</span> <span class="o">=</span> <span class="n">dsCO</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">timeCO</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">time_units</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">timeCO</span>  <span class="c1"># fallback kalau tidak ada units</span>
+
+<span class="n">new_dates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)):</span>
+    <span class="c1"># ubah format datetime</span>
+    <span class="n">new_date</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">new_dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_date</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">new_dates</span><span class="p">,</span>
+    <span class="s2">&quot;CO&quot;</span><span class="p">:</span> <span class="n">co</span>
+<span class="p">})</span>
+
+<span class="c1"># Simpan ke CSV</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;CO_Bangkalan_timeseries_terkini.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">so2</span> <span class="o">=</span> <span class="n">dsSO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;SO2&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">timeSO2</span> <span class="o">=</span> <span class="n">dsSO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][:]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">time_units</span> <span class="o">=</span> <span class="n">dsSO2</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">timeSO2</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">time_units</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">timeSO2</span>  <span class="c1"># fallback kalau tidak ada units</span>
+
+<span class="n">new_dates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)):</span>
+    <span class="c1"># ubah format datetime</span>
+    <span class="n">new_date</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">new_dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_date</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">new_dates</span><span class="p">,</span>
+    <span class="s2">&quot;SO2&quot;</span><span class="p">:</span> <span class="n">so2</span>
+<span class="p">})</span>
+
+<span class="c1"># Simpan ke CSV</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;SO2_Bangkalan_timeseries_terkini.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">WELCOME TO MY NOTEBOOK</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latar-belakang">1. Latar Belakang</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tujuan-bisnis-business-objectives">2. Tujuan Bisnis (Business Objectives)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manfaat-business-benefits">3. Manfaat (Business Benefits)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-bagi-masyarakat-umum-public-health">A. Bagi Masyarakat Umum (Public &amp; Health)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-bagi-pemerintah-dan-pembuat-kebijakan-government-policy-makers">B. Bagi Pemerintah dan Pembuat Kebijakan (Government &amp; Policy Makers)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-bagi-sektor-bisnis-dan-industri-private-sector">C. Bagi Sektor Bisnis dan Industri (Private Sector)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-bagi-akademisi-dan-peneliti">D. Bagi Akademisi dan Peneliti</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
