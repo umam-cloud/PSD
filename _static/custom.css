@@ -1,0 +1,4 @@
+/* Menyembunyikan top navbar (baris abu-abu di paling atas) */
+#pst-header {
+    display: none !important;
+}
