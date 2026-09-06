@@ -1,4 +1,4 @@
-/* Menyembunyikan top navbar (baris abu-abu di paling atas) */
-#pst-header {
+/* Menyembunyikan search bar di header atas */
+.bd-header {
     display: none !important;
 }

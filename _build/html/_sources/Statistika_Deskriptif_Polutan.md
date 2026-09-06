@@ -4,29 +4,29 @@ Dalam analisis data, ringkasan metrik yang ditampilkan pada tabel disebut sebaga
 
 Tabel tersebut menampilkan ringkasan untuk beberapa variabel konsentrasi polutan udara ($NO_2$, $CO$, $SO_2$, $O_3$). Berikut adalah penjelasan masing-masing metrik beserta cara perhitungan manualnya:
 
-## 1. Min & Max
+### 1. Min & Max
 *   **Penjelasan:** Nilai observasi terendah (Min) dan tertinggi (Max) dalam satu set data. Metrik ini digunakan untuk melihat batas bawah dan batas atas rentang data.
 *   **Perhitungan Manual:** Urutkan seluruh data dari nilai terkecil hingga terbesar.
     *   $Min = X_1$ (Data urutan pertama)
     *   $Max = X_n$ (Data urutan terakhir)
 
-## 2. Mean
+### 2. Mean
 *   **Penjelasan:** Nilai pusat dari kumpulan data, dihitung dengan menjumlahkan semua observasi lalu membaginya dengan jumlah total observasi yang valid.
 *   **Perhitungan Manual:**
     $$ \bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} $$
     *(Jumlahkan seluruh nilai konsentrasi polutan, kemudian bagi dengan total baris data yang ada)*.
 
-## 3. Std. Deviation
+### 3. Std. Deviation
 *   **Penjelasan:** Mengukur seberapa jauh rata-rata penyimpangan titik-titik data terhadap nilai Mean-nya. Standar deviasi yang rendah menunjukkan data mengelompok dekat dengan rata-rata (konsisten), sedangkan nilai yang tinggi menunjukkan rentang fluktuasi yang besar.
 *   **Perhitungan Manual (Sampel):**
     $$ s = \sqrt{\frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1}} $$
 
-## 4. Variance
+### 4. Variance
 *   **Penjelasan:** Rata-rata dari kuadrat selisih masing-masing titik data dengan nilai Mean. Varians secara matematis adalah kuadrat dari nilai Standar Deviasi.
 *   **Perhitungan Manual (Sampel):**
     $$ s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1} $$
 
-## 5. Skewness 
+### 5. Skewness 
 *   **Penjelasan:** Mengukur derajat asimetri (ketidakseimbangan) dari distribusi data terhadap nilai rata-ratanya.
     *   *Skewness = 0*: Data terdistribusi simetris / normal berpusat di tengah.
     *   *Skewness > 0 (Positif)*: Ekor grafik memanjang ke kanan (kondisi nilai ekstrem yang tinggi). Contoh pada data observasi $SO_2$ dengan nilai 2.124.
@@ -34,7 +34,7 @@ Tabel tersebut menampilkan ringkasan untuk beberapa variabel konsentrasi polutan
 *   **Perhitungan Manual (Fisher-Pearson):**
     $$ Skewness = \frac{n}{(n-1)(n-2)} \sum_{i=1}^{n} \left(\frac{x_i - \bar{x}}{s}\right)^3 $$
 
-## 6. Kurtosis
+### 6. Kurtosis
 *   **Penjelasan:** Mengukur tingkat "keruncingan" atau bobot ekor dari distribusi data (*tailedness*). Menunjukkan seberapa ekstrem *outlier* dalam data. Sebagian besar *software* secara spesifik mengukur *Excess Kurtosis*.
     *   *Kurtosis ≈ 0*: Normal (Mesokurtik).
     *   *Kurtosis > 0*: Puncak tajam dengan ekor tebal yang menandakan banyak outlier ekstrem tinggi atau rendah (Leptokurtik). Contoh ekstrem: data $SO_2$ (19.221).
@@ -42,30 +42,30 @@ Tabel tersebut menampilkan ringkasan untuk beberapa variabel konsentrasi polutan
 *   **Perhitungan Manual (Excess Kurtosis Sampel):**
     $$ Kurtosis = \left[ \frac{n(n+1)}{(n-1)(n-2)(n-3)} \sum \left(\frac{x_i - \bar{x}}{s}\right)^4 \right] - \frac{3(n-1)^2}{(n-2)(n-3)} $$
 
-## 7. Overall Sum
+### 7. Overall Sum
 *   **Penjelasan:** Jumlah total akumulasi dari seluruh nilai dalam variabel tersebut.
 *   **Perhitungan Manual:**
     $$ Sum = \sum_{i=1}^{n} x_i $$
 
-## 8. Metrik Kualitas / Anomali Data
+### 8. Metrik Kualitas / Anomali Data
 Kumpulan metrik ini sangat penting saat melakukan penarikan data mentah via API atau dari citra satelit, karena sangat rentan terhadap kegagalan perekaman nilai.
 *   **No. missings:** Jumlah sel kosong (NULL / NA) akibat data tidak terekam pada rentang waktu tertentu.
 *   **No. NaNs (Not a Number):** Jumlah entri yang terbaca namun tidak terdefinisi secara matematis (seperti 0/0).
 *   **No. +infs / No. -infs:** Nilai batas tak terhingga.
 *   **Perhitungan Manual:** Menghitung frekuensi baris (N) yang mengandung nilai khusus tersebut.
 
-## 9. Median
+### 9. Median
 *   *Catatan: Pada tabel di atas, nilai Median belum dikomputasi secara utuh (ditandai dengan icon tanda tanya merah).*
 *   **Penjelasan:** Nilai yang tepat berada di tengah set data setelah diurutkan. Metrik ini sering digunakan sebagai alternatif dari rata-rata (Mean) karena Median tidak terpengaruh oleh keberadaan nilai *outlier* yang ekstrem.
 *   **Perhitungan Manual:** Urutkan seluruh data dari $X_1$ sampai $X_n$.
     *   Jika jumlah observasi ($n$) ganjil: $Median = X_{(n+1)/2}$
     *   Jika jumlah observasi ($n$) genap: $Median = \frac{X_{n/2} + X_{(n/2)+1}}{2}$
 
-# **Implementasi Analisis Data Polutan: Dari Cloud Database ke KNIME**
+## **Implementasi Analisis Data Polutan: Dari Cloud Database ke KNIME**
 
 Panduan ini menjelaskan urutan langkah untuk menghubungkan database PostgreSQL di Aiven, menginspeksi data menggunakan HeidiSQL, dan mengekstraksi metrik statistika deskriptif menggunakan KNIME Analytics Platform.
 
-## Langkah 1: Mengambil Kredensial Database dari Aiven
+### Langkah 1: Mengambil Kredensial Database dari Aiven
 
 Sebelum melakukan koneksi dari aplikasi manapun, Anda memerlukan informasi kredensial server.
 1. Buka *dashboard* atau console **Aiven** dan arahkan ke proyek Anda.
@@ -82,7 +82,7 @@ Sebelum melakukan koneksi dari aplikasi manapun, Anda memerlukan informasi krede
 
 ---
 
-## Langkah 2: Konfigurasi Koneksi di HeidiSQL
+### Langkah 2: Konfigurasi Koneksi di HeidiSQL
 
 HeidiSQL digunakan untuk menginspeksi tabel dan data secara langsung sebelum diproses.
 1. Buka aplikasi **HeidiSQL** dan klik tombol **New** untuk membuat sesi baru (misalnya dinamakan `PSD`).
@@ -100,7 +100,7 @@ HeidiSQL digunakan untuk menginspeksi tabel dan data secara langsung sebelum dip
 
 ---
 
-## Langkah 3: Inspeksi Tabel Data di HeidiSQL
+### Langkah 3: Inspeksi Tabel Data di HeidiSQL
 
 Setelah koneksi berhasil, Anda perlu memastikan data mentah sudah tersedia dan formatnya sesuai.
 1. Di panel sebelah kiri HeidiSQL, buka *tree* database `PSD_Polutan_Bangkalan` > skema `public` > tabel `polutan`.
@@ -112,7 +112,7 @@ Setelah koneksi berhasil, Anda perlu memastikan data mentah sudah tersedia dan f
 
 ---
 
-## Langkah 4: Membangun Alur Kerja (Workflow) di KNIME
+### Langkah 4: Membangun Alur Kerja (Workflow) di KNIME
 
 Beralih ke KNIME Analytics Platform untuk menarik data dari database dan menghitung statistiknya secara otomatis.
 1. Buka **KNIME Analytics Platform** dan buat *workflow* baru.
@@ -131,7 +131,7 @@ Beralih ke KNIME Analytics Platform untuk menarik data dari database dan menghit
 
 ---
 
-## Langkah 5: Membaca Hasil Statistika Deskriptif
+### Langkah 5: Membaca Hasil Statistika Deskriptif
 
 Setelah data berhasil ditarik ke KNIME, tahap terakhir adalah mengeksekusi perhitungan analitik.
 1. Klik kanan pada node **Statistics** dan pilih **Execute**.
@@ -144,3 +144,193 @@ Setelah data berhasil ditarik ke KNIME, tahap terakhir adalah mengeksekusi perhi
    * **Histogram:** Visualisasi sebaran datanya.
 
 ![Tabel Hasil Output Node Statistics](./img/aiven/statistic-polutan.png)
+
+## **Perhitungan Manual — Kolom O3**
+
+Perhitungan manual di bawah ini menggunakan kolom **O3** dari file `Polutan_Bangkalan.csv` sebagai patokan.
+
+**Data dasar:**
+- Total baris = 602
+- Missing values = 6
+- n = total baris − missing values = 602 − 6 = **596**
+- Rata-rata (x̄) = **0.1159662821**
+
+---
+
+### 1. Standar Deviasi
+
+$$
+s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n-1}}
+$$
+
+dimana:
+- $x_i$ adalah data ke-$i$
+- $\bar{x}$ adalah rata-rata dari $x$
+- $n$ adalah jumlah baris (dikarenakan terdapat missing values, $n = total\,baris - missing\,values$)
+
+$$
+n = 602 - 6 = 596
+$$
+$$
+\bar{x} = 0.1159662821
+$$
+
+$$
+s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n-1}}
+$$
+
+$$
+s = \sqrt{\frac{0.003033533}{596-1}}
+$$
+
+$$
+s = \sqrt{\frac{0.003033533}{595}}
+$$
+
+$$
+s = 0.0022597837
+$$
+
+---
+
+### 2. Variansi
+
+Variansi dapat diketahui dengan mengkuadratkan **Standar Deviasi**.
+
+$$
+v = s^2
+$$
+$$
+v = 0.0022597837^2
+$$
+$$
+v = 5.10662252 \times 10^{-6}
+$$
+
+---
+
+### 3. Skewness
+
+$$
+Skewness = \frac{n}{(n-1)(n-2)}\sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^3
+$$
+
+Rumus di atas dapat dikelompokkan menjadi 2 bagian untuk mempermudah perhitungan:
+
+$$
+Skewness = \underbrace{\frac{n}{(n-1)(n-2)}}_{A} \underbrace{\sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^3}_{B}
+$$
+
+$$
+A = \frac{n}{(n-1)(n-2)}
+$$
+$$
+A = \frac{596}{(596-1)(596-2)} = \frac{596}{353430}
+$$
+$$
+A = 0.0016863311
+$$
+
+$$
+B = \sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^3
+$$
+$$
+B = \left(\frac{0.11819183 - 0.1159662821}{0.0022597837}\right)^3 + \left(\frac{0.11931646 - 0.1159662821}{0.0022597837}\right)^3 + \dots + \left(\frac{0.12090768 - 0.1159662821}{0.0022597837}\right)^3
+$$
+$$
+B = 84.6949
+$$
+
+$$
+Skewness = A \times B
+$$
+$$
+Skewness = 0.0016863311 \times 84.6949
+$$
+$$
+Skewness = 0.142866
+$$
+
+---
+
+### 4. Kurtosis
+
+$$
+Kurtosis = \left[\frac{n(n+1)}{(n-1)(n-2)(n-3)}\sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^4\right] - \frac{3(n-1)^2}{(n-2)(n-3)}
+$$
+
+Rumus di atas dapat dikelompokkan menjadi 3 bagian:
+
+$$
+Kurtosis = \left[\underbrace{\frac{n(n+1)}{(n-1)(n-2)(n-3)}}_{A}\underbrace{\sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^4}_{B}\right] - \underbrace{\frac{3(n-1)^2}{(n-2)(n-3)}}_{C}
+$$
+
+$$
+A = \frac{n(n+1)}{(n-1)(n-2)(n-3)}
+$$
+$$
+A = \frac{596(596+1)}{(596-1)(596-2)(596-3)} = \frac{355812}{209583990}
+$$
+$$
+A = 0.0016977060
+$$
+
+$$
+B = \sum_{i=1}^{n}\left(\frac{x_i-\bar{x}}{s}\right)^4
+$$
+$$
+B = \left(\frac{0.11819183 - 0.1159662821}{0.0022597837}\right)^4 + \left(\frac{0.11931646 - 0.1159662821}{0.0022597837}\right)^4 + \dots + \left(\frac{0.12090768 - 0.1159662821}{0.0022597837}\right)^4
+$$
+$$
+B = 1555.1626
+$$
+
+$$
+C = \frac{3(n-1)^2}{(n-2)(n-3)}
+$$
+$$
+C = \frac{3(596-1)^2}{(596-2)(596-3)} = \frac{1062075}{352242}
+$$
+$$
+C = 3.0151856
+$$
+
+$$
+Kurtosis = (A \times B) - C
+$$
+$$
+Kurtosis = (0.0016977060 \times 1555.1626) - 3.0151856
+$$
+$$
+Kurtosis = -0.374977
+$$
+
+---
+
+### 5. Overall Sum
+
+Overall Sum adalah jumlah keseluruhan / total dari seluruh nilai angka dalam suatu kumpulan data.
+
+$$
+OS = \sum_{i=1}^{n} x_i
+$$
+$$
+OS = 0.11819183 + 0.11931646 + 0.11767874 + \dots + x_n
+$$
+$$
+OS = 69.115904
+$$
+
+---
+
+## **Ringkasan Perbandingan dengan KNIME**
+
+| Metrik | Perhitungan Manual | Hasil KNIME |
+|---|---|---|
+| Std. Deviation | 0.0022597837 | 0.00225978378 |
+| Variance | 5.10662E-06 | 5.10662274111331E-06 |
+| Skewness | 0.142866 | 0.143 |
+| Kurtosis | -0.374977 | -0.375 |
+| Overall Sum | 69.115904 | 69.116 |
+
+Hasil perhitungan manual sudah sangat mendekati hasil dari KNIME (selisih hanya pada digit desimal terakhir, wajar karena pembulatan pada tiap tahap perhitungan).
