@@ -14,20 +14,116 @@ kernelspec:
 
 # Preprocessing dan Ekstraksi Fitur
 
-## Preprocessing: Penanganan Outliers dan Interpolasi
+## Preprocessing: Penanganan Missing Value, Outliers dan Interpolasi
 
 Pada tahap _Data Understanding_, kita telah mengidentifikasi adanya _missing values_ dan _outliers_. Untuk menangani masalah ini dan mempersiapkan data agar bisa diekstrak fiturnya secara berkesinambungan, kita menerapkan pembersihan data menggunakan metode Rentang Interkuartil (IQR) dan mengisi kekosongan data menggunakan **interpolasi linier**.
+
+### Deteksi Missing Value
+
+Deteksi _missing value_ (data kosong atau hilang) bertujuan untuk mengidentifikasi seberapa banyak data yang tidak terekam dalam observasi. Mengetahui jumlah dan persentase kekosongan data sangat penting sebelum dilakukan proses penanganan (seperti interpolasi), agar kita dapat mengukur kualitas dataset secara keseluruhan.
+
+```python
+import pandas as pd
+
+df = pd.read_csv("nama_file_polutan.csv")
+
+missing_value = df['nama_kolom_polutan'].isna().sum()
+total_data = len(df)
+persentase_missing = (missing_value / total_data) * 100
+
+print(f"Jumlah missing value: {missing_value}")
+print(f"Total data: {total_data}")
+print(f"Persentase data missing: {persentase_missing:.2f}%")
+```
+
+1. NO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_Terkini.csv")
+
+missing_value = df['NO2'].isna().sum()
+total_data = len(df)
+persentase_missing = (missing_value / total_data) * 100
+
+print(f"Jumlah missing value: {missing_value}")
+print(f"Total data: {total_data}")
+print(f"Persentase data missing: {persentase_missing:.2f}%")
+```
+
+2. CO
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+
+df = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_Terkini.csv")
+
+missing_value = df['CO'].isna().sum()
+total_data = len(df)
+persentase_missing = (missing_value / total_data) * 100
+
+print(f"Jumlah missing value: {missing_value}")
+print(f"Total data: {total_data}")
+print(f"Persentase data missing: {persentase_missing:.2f}%")
+```
+
+3. SO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+
+df = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_Terkini.csv")
+
+missing_value = df['SO2'].isna().sum()
+total_data = len(df)
+persentase_missing = (missing_value / total_data) * 100
+
+print(f"Jumlah missing value: {missing_value}")
+print(f"Total data: {total_data}")
+print(f"Persentase data missing: {persentase_missing:.2f}%")
+```
 
 ### Deteksi dan Visualisasi Outlier (Metode IQR)
 
 Metode _Interquartile Range_ (IQR) digunakan untuk mengidentifikasi nilai-nilai yang menyimpang atau berada di luar batas kewajaran. Data polutan yang nilainya lebih rendah dari _lower bound_ atau lebih tinggi dari _upper bound_ diklasifikasikan sebagai outlier.
 
-```{code-cell}
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("./source/polutan/NO2_Kwanyar_timeseries_terkini.csv")
+df = pd.read_csv("nama_file_polutan.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['nama_kolom_polutan'].quantile(0.25)
+Q3 = df['nama_kolom_polutan'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['nama_kolom_polutan'] < lower_bound) | (df['nama_kolom_polutan'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'nama_kolom_polutan']].head())
+```
+
+1. NO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_Terkini.csv")
 df['date'] = pd.to_datetime(df['date'])
 df = df.sort_values('date').reset_index(drop=True)
 
@@ -46,9 +142,122 @@ print("Jumlah Outlier (IQR):", len(outliers_iqr))
 print(outliers_iqr[['date', 'NO2']].head())
 ```
 
-Visualisasi batas ambang IQR terhadap distribusi data untuk melihat outlier secara lebih jelas:
+2. CO
 
 ```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['CO'].quantile(0.25)
+Q3 = df['CO'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['CO'] < lower_bound) | (df['CO'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'CO']].head())
+```
+
+3. SO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['SO2'].quantile(0.25)
+Q3 = df['SO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['SO2'] < lower_bound) | (df['SO2'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'SO2']].head())
+```
+
+Visualisasi batas ambang IQR terhadap distribusi data untuk melihat outlier secara lebih jelas:
+
+```python
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("nama_file_polutan.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['nama_kolom_polutan'].quantile(0.25)
+Q3 = df['nama_kolom_polutan'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['nama_kolom_polutan'] < lower_bound) | (df['nama_kolom_polutan'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['nama_kolom_polutan'], label="nama_kolom_polutan", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['nama_kolom_polutan'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data nama_kolom_polutan (Metode IQR)")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar nama_kolom_polutan")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
+1. NO2
+
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['NO2'].quantile(0.25)
+Q3 = df['NO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['NO2'] < lower_bound) | (df['NO2'] > upper_bound)]
+
 plt.figure(figsize=(15,5))
 plt.plot(df['date'], df['NO2'], label="NO2", linewidth=1)
 
@@ -71,14 +280,102 @@ plt.xticks(
 plt.show()
 ```
 
+2. CO
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['CO'].quantile(0.25)
+Q3 = df['CO'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['CO'] < lower_bound) | (df['CO'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['CO'], label="CO", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['CO'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data CO (Metode IQR)")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar CO")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
+3. SO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['SO2'].quantile(0.25)
+Q3 = df['SO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['SO2'] < lower_bound) | (df['SO2'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['SO2'], label="SO2", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['SO2'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data SO2 (Metode IQR)")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar SO2")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
 ### Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data
 
 Setelah mendeteksi keberadaan outlier, langkah selanjutnya adalah menandainya sebagai nilai kosong (`NaN`). Karena pada data deret waktu terdapat banyak tanggal yang terlewat, kita melengkapi rentang waktunya (dari tanggal terawal hingga terakhir). Kemudian, metode interpolasi linier diterapkan pada keseluruhan dataset untuk mengisi nilai kosong (`NaN`) tersebut. Di akhir proses, teknik _backward fill_ (`bfill`) serta _forward fill_ (`ffill`) dimanfaatkan guna mengatasi nilai kosong pada bagian pinggir atau awalan dan akhiran rangkaian data yang tidak bisa diinterpolasi linier.
 
 ```python
 # Tandai outlier menjadi NaN
-df['NO2_cleaned'] = df['NO2'].mask(
-    (df['NO2'] < lower_bound) | (df['NO2'] > upper_bound)
+df['polutan_cleaned'] = df['polutan'].mask(
+    (df['polutan'] < lower_bound) | (df['polutan'] > upper_bound)
 )
 
 # Memasukkan data ke dalam rentang tanggal yang lengkap
@@ -86,30 +383,57 @@ df = df.set_index('date')
 rentang_tanggal_lengkap = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
 df_lengkap = df.reindex(rentang_tanggal_lengkap)
 
-# Lakukan interpolasi linier pada NaN yang sudah dibuat (dari outlier & reindex)
-df_lengkap['NO2_filled'] = df_lengkap['NO2_cleaned'].interpolate(method='linear')
-df_lengkap['NO2_filled'] = df_lengkap['NO2_filled'].bfill().ffill()
+# interpolasi linier pada NaN yang sudah dibuat (dari outlier & reindex)
+df_lengkap['polutan_filled'] = df_lengkap['polutan_cleaned'].interpolate(method='linear')
+df_lengkap['polutan_filled'] = df_lengkap['polutan_filled'].bfill().ffill()
 
 # Kembalikan index menjadi kolom
 df_lengkap.index.name = 'date'
 df_lengkap.reset_index(inplace=True)
 
 # Simpan data yang telah dibersihkan dan diinterpolasi ke file CSV baru
-df_no2_Kwanyar = pd.DataFrame({
+df_polutan_Kwanyar = pd.DataFrame({
     "date": df_lengkap['date'],
-    "NO2": df_lengkap['NO2_filled']
+    "polutan": df_lengkap['polutan_filled']
 })
-df_no2_Kwanyar.to_csv("./source/polutan/NO2_Kwanyar_filled.csv", index=False)
+df_polutan_Kwanyar.to_csv("nama_hasil_file_polutan_cleaned.csv", index=False)
 ```
 
 Grafik setelah penanganan Outlier dan Penambahan Tanggal
 
-```{code-cell}
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("./source/polutan/NO2_Kwanyar_filled.csv")
+df = pd.read_csv("nama_file_polutan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['nama_kolom_polutan'].quantile(0.25)
+Q3 = df['nama_kolom_polutan'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['nama_kolom_polutan'] < lower_bound) | (df['nama_kolom_polutan'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'nama_kolom_polutan']].head())
+```
+
+1. NO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_final.csv")
 df['date'] = pd.to_datetime(df['date'])
 df = df.sort_values('date').reset_index(drop=True)
 
@@ -128,9 +452,121 @@ print("Jumlah Outlier (IQR):", len(outliers_iqr))
 print(outliers_iqr[['date', 'NO2']].head())
 ```
 
-Visualisasi batas ambang IQR terhadap distribusi data untuk melihat outlier secara lebih jelas:
+2. CO
 
 ```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['CO'].quantile(0.25)
+Q3 = df['CO'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['CO'] < lower_bound) | (df['CO'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'CO']].head())
+```
+
+3. SO2
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['SO2'].quantile(0.25)
+Q3 = df['SO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Filter outlier
+outliers_iqr = df[(df['SO2'] < lower_bound) | (df['SO2'] > upper_bound)]
+
+print("Jumlah Outlier (IQR):", len(outliers_iqr))
+print(outliers_iqr[['date', 'SO2']].head())
+```
+
+Visualisasi batas ambang IQR terhadap distribusi data untuk melihat outlier secara lebih jelas:
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("nama_file_polutan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['nama_kolom_polutan'].quantile(0.25)
+Q3 = df['nama_kolom_polutan'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['nama_kolom_polutan'] < lower_bound) | (df['nama_kolom_polutan'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['nama_kolom_polutan'], label="nama_kolom_polutan", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['nama_kolom_polutan'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data nama_kolom_polutan (Metode IQR) - Setelah Penanganan")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar nama_kolom_polutan")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
+1. NO2
+
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['NO2'].quantile(0.25)
+Q3 = df['NO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['NO2'] < lower_bound) | (df['NO2'] > upper_bound)]
+
 plt.figure(figsize=(15,5))
 plt.plot(df['date'], df['NO2'], label="NO2", linewidth=1)
 
@@ -143,6 +579,86 @@ plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound 
 plt.title("Deteksi Outlier Data NO2 (Metode IQR) - Setelah Penanganan")
 plt.xlabel("Tanggal")
 plt.ylabel("Kadar NO2")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
+2. CO
+
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['CO'].quantile(0.25)
+Q3 = df['CO'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['CO'] < lower_bound) | (df['CO'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['CO'], label="CO", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['CO'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data CO (Metode IQR) - Setelah Penanganan")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar CO")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+```
+
+3. SO2
+
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_final.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['SO2'].quantile(0.25)
+Q3 = df['SO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_iqr = df[(df['SO2'] < lower_bound) | (df['SO2'] > upper_bound)]
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['SO2'], label="SO2", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['SO2'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data SO2 (Metode IQR) - Setelah Penanganan")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar SO2")
 plt.legend()
 plt.tight_layout()
 plt.xticks(
@@ -168,11 +684,11 @@ import inspect
 import tsfel.feature_extraction.features as tsfel_features
 
 # ---------- 1. Muat data yang sudah dibersihkan ----------
-df = pd.read_csv('./source/polutan/NO2_Kwanyar_filled.csv')
+df = pd.read_csv('nama_file_polutan_cleaned.csv')
 df['date'] = pd.to_datetime(df['date'])
 df = df.sort_values('date').reset_index(drop=True)
 
-target_pollutant = 'NO2'
+target_pollutant = 'nama_polutan'
 
 # Pastikan data di-casting ke tipe numerik.
 df[target_pollutant] = pd.to_numeric(df[target_pollutant], errors='coerce')
@@ -228,75 +744,31 @@ extracted_features_final = pd.DataFrame([row])
 print(f"Berhasil! Jumlah fitur yang diekstrak pada {target_pollutant}: {extracted_features_final.shape[1]}")
 
 # Export hasil ke file CSV
-extracted_features_final.to_csv(f'./source/polutan/{target_pollutant}_Bangkalan_TSFEL.csv', index=False)
+extracted_features_final.to_csv(f'nama_hasil_ekstraksi_fitur_TSFEL.csv', index=False)
 ```
 
 Data hasil ekstraksi fitur menggunakan TSFEL
 
+1. NO2
+
 ```{code-cell}
 :tags: [hide-input]
-df = pd.read_csv("./source/polutan/NO2_Kwanyar_TSFEL.csv")
+df = pd.read_csv("./source/Ekstraksi_fitur/NO2_Kwanyar_TSFEL.csv")
 df.head(5)
 ```
 
-## Penjelasan Domain TSFEL
+2. CO
 
-Pustaka TSFEL membagi fitur deret waktu menjadi tiga domain utama untuk menganalisis data dari berbagai perspektif: **Statistik (Statistical)**, **Waktu (Temporal)**, dan **Frekuensi (Spectral)**. Berikut adalah penjelasan untuk setiap domain beserta fitur-fitur yang terdapat di dalamnya:
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/Ekstraksi_fitur/CO_Kwanyar_TSFEL.csv")
+df.head(5)
+```
 
-### 1. Domain Statistical
-Domain statistik mengekstrak metrik kuantitatif dan karakteristik sebaran serta bentuk distribusi dari sinyal deret waktu tanpa mempertimbangkan urutan kemunculan waktunya. Fitur-fitur ini sangat baik untuk mengetahui rentang, kecenderungan memusat, dan variasi data.
+3. SO2
 
-* **`calc_max`, `calc_min`, `calc_mean`, `calc_median`**: Nilai maksimum, minimum, rata-rata, dan median dari deret waktu polutan.
-* **`calc_std`, `calc_var`**: Standar deviasi dan varians yang mengukur tingkat penyebaran atau fluktuasi sinyal.
-* **`ecdf`, `ecdf_percentile`, `ecdf_percentile_count`, `ecdf_slope`**: Metrik berdasarkan _Empirical Cumulative Distribution Function_ (ECDF) yang menggambarkan distribusi probabilitas kumulatif dari sinyal.
-* **`hist_mode`**: Nilai kemunculan terbanyak (modus) dalam histogram data.
-* **`interq_range`**: _Interquartile Range_ (IQR), mengukur rentang data di antara kuartil atas (Q3) dan kuartil bawah (Q1).
-* **`kurtosis`**: Tingkat kelancipan (_peakedness_) dari distribusi data polutan dibandingkan dengan distribusi normal.
-* **`skewness`**: Ukuran ketidaksimetrisan (kemiringan) dari distribusi data polutan.
-* **`mean_abs_deviation`, `median_abs_deviation`**: Rata-rata dan median deviasi absolut yang memberikan ukuran kekokohan (_robustness_) sebaran data dari rata-rata atau mediannya.
-* **`rms`**: _Root Mean Square_ (RMS), ukuran besaran rata-rata kuadrat dari sinyal, mencerminkan energi rata-rata data.
-
-### 2. Domain Temporal
-Domain temporal mengevaluasi sinyal dari segi urutan waktunya. Fitur ini sangat krusial untuk menemukan siklus, tren linier, kompleksitas atau tingkat kekacauan (_chaos_) pada data, serta autokorelasi dari suatu titik waktu ke waktu lainnya.
-
-* **`abs_energy`**: Total energi absolut yang dikandung oleh sinyal seiring berjalannya waktu.
-* **`auc`**: _Area Under the Curve_ (AUC), total luas area di bawah kurva sinyal polutan.
-* **`autocorr`**: Autokorelasi, seberapa kuat sinyal polutan saat ini berkorelasi dengan waktu-waktu sebelumnya.
-* **`average_power`**: Rata-rata kekuatan sinyal dalam domain waktu.
-* **`calc_centroid`**: Titik pusat (centroid) sinyal di sepanjang sumbu waktu.
-* **`dfa`**: _Detrended Fluctuation Analysis_ (DFA), untuk mengukur dependensi jangka panjang atau fraktalitas sinyal.
-* **`distance`**: Total jarak lintasan pergerakan titik data dari awal hingga akhir.
-* **`entropy`**: Skalar entropi yang mengukur tingkat ketidakteraturan, ketidakpastian, atau kerumitan pada deret waktu.
-* **`higuchi_fractal_dimension`, `petrosian_fractal_dimension`**: Dimensi fraktal yang digunakan untuk menilai seberapa bergerigi atau kompleks sinyal secara matematis.
-* **`hurst_exponent`**: Mengevaluasi apakah deret waktu memiliki tren memori jangka panjang (misalnya, jika polusi naik hari ini, apakah besok cenderung naik juga).
-* **`lempel_ziv`**: Tingkat kompresibilitas atau kekayaan pola pada sinyal (kompleksitas deterministik).
-* **`maximum_fractal_length`**: Panjang maksimal fraktal dari skala waktu yang bervariasi.
-* **`mean_abs_diff`, `mean_diff`, `median_abs_diff`, `median_diff`**: Rata-rata dan median dari selisih atau selisih absolut antar data yang berurutan. Menggambarkan laju perubahan data harian.
-* **`mse`**: _Mean Squared Error_, parameter rata-rata kesalahan kuadrat dari sinyal terkait model rata-ratanya.
-* **`negative_turning`, `positive_turning`**: Jumlah titik belok di mana tren data berubah dari naik ke turun (negatif) dan turun ke naik (positif).
-* **`neighbourhood_peaks`**: Memonitor titik-titik puncak di suatu lingkup observasi berdekatan.
-* **`pk_pk_distance`**: Jarak dari lembah terendah ke puncak tertinggi (_Peak-to-Peak_).
-* **`slope`**: Kemiringan tren data linear secara keseluruhan (naik/turun).
-* **`sum_abs_diff`**: Total akumulasi jumlah perbedaan absolut dari satu titik waktu ke waktu berikutnya.
-* **`zero_cross`**: Seberapa sering sinyal menyilang nilai nol (atau memotong garis _baseline_).
-
-### 3. Domain Spectral
-Domain spektral memproses deret waktu dengan mentransformasikannya ke dalam ranah frekuensi (menggunakan algoritma spektrum fourier atau dekomposisi wavelet). Fitur pada domain ini sangat bagus untuk menganalisis sifat periodik dan kepadatan osilasi gelombang yang tersembunyi.
-
-* **`fundamental_frequency`**: Frekuensi dasar yang paling menonjol dalam sinyal, menandakan siklus polutan terkuat.
-* **`max_frequency`**: Frekuensi tertinggi yang dicatat pada analisis spektrum.
-* **`median_frequency`**: Frekuensi median pembagi tengah total daya pada spektrum sinyal polutan.
-* **`human_range_energy`**: Energi sinyal dalam rentang frekuensi tertentu (lebih spesifik untuk pergerakan frekuensi pada rentang manusia).
-* **`lpcc`, `mfcc`**: _Linear Prediction Cepstral Coefficients_ dan _Mel-Frequency Cepstral Coefficients_, representasi padat terkait spektrum sinyal yang biasa digunakan dalam pemrosesan suara, berguna memetakan tekstur frekuensi polutan.
-* **`max_power_spectrum`**: Nilai daya (energi) tertinggi pada frekuensi dominan dalam seluruh pita spektrum.
-* **`power_bandwidth`**: Lebar pita frekuensi tempat sebagian besar energi sinyal difokuskan.
-* **`spectral_centroid`**: Titik berat frekuensi, mengindikasikan apakah energi spektrum lebih condong ke frekuensi tinggi atau rendah.
-* **`spectral_decrease`, `spectral_slope`**: Pengukuran tren seberapa curam/cepat daya spektrum menurun pada frekuensi tinggi.
-* **`spectral_distance`**: Ukuran jarak antara profil frekuensi berdekatan (kestabilan spektrum).
-* **`spectral_entropy`**: Entropi spektral, seberapa datar atau bervariasi distribusi energi pada keseluruhan pita frekuensi (menandakan keteraturan sinyal siklik).
-* **`spectral_kurtosis`, `spectral_skewness`**: Parameter bentuk untuk kurva densitas spektrum (menilai kelancipan dan kemiringan pita spektral).
-* **`spectral_positive_turning`**: Jumlah belokan (titik naik) pada plot kepadatan spektral frekuensi.
-* **`spectral_roll_off`, `spectral_roll_on`**: Titik frekuensi di mana presentase mayoritas daya (misal 95%) telah terkonsentrasi; berguna untuk penyaringan sinyal bising/noise.
-* **`spectral_spread`, `spectral_variation`**: Penyebaran atau lebar pita variasi spektrum di sekeliling _centroid_.
-* **`spectrogram_mean_coeff`**: Rata-rata tingkat magnitudo atau koefisien yang diambil dari keseluruhan hasil matriks spektrogram waktu-frekuensi.
-* **`wavelet_abs_mean`, `wavelet_energy`, `wavelet_entropy`, `wavelet_std`, `wavelet_var`**: Parameter dari hasil Transformasi Wavelet (rata-rata mutlak, energi, entropi, standar deviasi, dan varians koefisien wavelet), berguna untuk mengungkap struktur waktu dan frekuensi secara simultan yang dapat berubah-ubah.
+```{code-cell}
+:tags: [hide-input]
+df = pd.read_csv("./source/Ekstraksi_fitur/SO2_Kwanyar_TSFEL.csv")
+df.head(5)
+```
