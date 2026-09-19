@@ -1,4 +1,4 @@
-# Penjelasan Metrik Statistika Deskriptif
+# Metrik Statistika Deskriptif
 
 Dalam analisis data, ringkasan metrik yang ditampilkan pada tabel disebut sebagai **Statistika Deskriptif (Descriptive Statistics)**. Hasil ini biasanya digunakan pada tahap awal analisis, yaitu **Exploratory Data Analysis (EDA)**, untuk memahami karakteristik, distribusi, dan kualitas data sebelum dilakukan pemrosesan lebih lanjut, peramalan (*forecasting*), atau pemodelan.
 

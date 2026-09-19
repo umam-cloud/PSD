@@ -1,0 +1,102 @@
+Traceback (most recent call last):
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\jupyter_cache\executors\utils.py", line 58, in single_nb_execution
+    executenb(
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "C:\laragon\bin\python\python-3.10\lib\asyncio\base_events.py", line 646, in run_until_complete
+    return future.result()
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_Terkini.csv")
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values('date').reset_index(drop=True)
+
+# Hitung IQR
+Q1 = df['NO2'].quantile(0.25)
+Q3 = df['NO2'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+plt.figure(figsize=(15,5))
+plt.plot(df['date'], df['NO2'], label="NO2", linewidth=1)
+
+plt.scatter(outliers_iqr['date'], outliers_iqr['NO2'],
+            color='red', marker='o', label="Outliers")
+
+plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
+plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
+
+plt.title("Deteksi Outlier Data NO2 (Metode IQR)")
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar NO2")
+plt.legend()
+plt.tight_layout()
+plt.xticks(
+    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
+    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
+            df['date'].iloc[-1].strftime('%Y-%m-%d')]
+)
+plt.show()
+------------------
+
+
+[1;31m---------------------------------------------------------------------------[0m
+[1;31mKeyError[0m                                  Traceback (most recent call last)
+File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\indexes\base.py:3812[0m, in [0;36mIndex.get_loc[1;34m(self, key)[0m
+[0;32m   3811[0m [38;5;28;01mtry[39;00m:
+[1;32m-> 3812[0m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_engine[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mcasted_key[49m[43m)[49m
+[0;32m   3813[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m [38;5;28;01mas[39;00m err:
+
+File [1;32mpandas/_libs/index.pyx:167[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[1;34m()[0m
+
+File [1;32mpandas/_libs/index.pyx:196[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[1;34m()[0m
+
+File [1;32mpandas/_libs/hashtable_class_helper.pxi:7088[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[1;34m()[0m
+
+File [1;32mpandas/_libs/hashtable_class_helper.pxi:7096[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[1;34m()[0m
+
+[1;31mKeyError[0m: 'NO2'
+
+The above exception was the direct cause of the following exception:
+
+[1;31mKeyError[0m                                  Traceback (most recent call last)
+Cell [1;32mIn[4], line 16[0m
+[0;32m     13[0m plt[38;5;241m.[39mfigure(figsize[38;5;241m=[39m([38;5;241m15[39m,[38;5;241m5[39m))
+[0;32m     14[0m plt[38;5;241m.[39mplot(df[[38;5;124m'[39m[38;5;124mdate[39m[38;5;124m'[39m], df[[38;5;124m'[39m[38;5;124mNO2[39m[38;5;124m'[39m], label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mNO2[39m[38;5;124m"[39m, linewidth[38;5;241m=[39m[38;5;241m1[39m)
+[1;32m---> 16[0m plt[38;5;241m.[39mscatter(outliers_iqr[[38;5;124m'[39m[38;5;124mdate[39m[38;5;124m'[39m], [43moutliers_iqr[49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mNO2[39;49m[38;5;124;43m'[39;49m[43m][49m,
+[0;32m     17[0m             color[38;5;241m=[39m[38;5;124m'[39m[38;5;124mred[39m[38;5;124m'[39m, marker[38;5;241m=[39m[38;5;124m'[39m[38;5;124mo[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mOutliers[39m[38;5;124m"[39m)
+[0;32m     19[0m plt[38;5;241m.[39maxhline(upper_bound, color[38;5;241m=[39m[38;5;124m'[39m[38;5;124morange[39m[38;5;124m'[39m, linestyle[38;5;241m=[39m[38;5;124m'[39m[38;5;124mdashed[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mUpper Bound (IQR)[39m[38;5;124m"[39m)
+[0;32m     20[0m plt[38;5;241m.[39maxhline(lower_bound, color[38;5;241m=[39m[38;5;124m'[39m[38;5;124mblue[39m[38;5;124m'[39m,   linestyle[38;5;241m=[39m[38;5;124m'[39m[38;5;124mdashed[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mLower Bound (IQR)[39m[38;5;124m"[39m)
+
+File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\frame.py:4107[0m, in [0;36mDataFrame.__getitem__[1;34m(self, key)[0m
+[0;32m   4105[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mcolumns[38;5;241m.[39mnlevels [38;5;241m>[39m [38;5;241m1[39m:
+[0;32m   4106[0m     [38;5;28;01mreturn[39;00m [38;5;28mself[39m[38;5;241m.[39m_getitem_multilevel(key)
+[1;32m-> 4107[0m indexer [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mcolumns[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mkey[49m[43m)[49m
+[0;32m   4108[0m [38;5;28;01mif[39;00m is_integer(indexer):
+[0;32m   4109[0m     indexer [38;5;241m=[39m [indexer]
+
+File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\indexes\base.py:3819[0m, in [0;36mIndex.get_loc[1;34m(self, key)[0m
+[0;32m   3814[0m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m(casted_key, [38;5;28mslice[39m) [38;5;129;01mor[39;00m (
+[0;32m   3815[0m         [38;5;28misinstance[39m(casted_key, abc[38;5;241m.[39mIterable)
+[0;32m   3816[0m         [38;5;129;01mand[39;00m [38;5;28many[39m([38;5;28misinstance[39m(x, [38;5;28mslice[39m) [38;5;28;01mfor[39;00m x [38;5;129;01min[39;00m casted_key)
+[0;32m   3817[0m     ):
+[0;32m   3818[0m         [38;5;28;01mraise[39;00m InvalidIndexError(key)
+[1;32m-> 3819[0m     [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(key) [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01merr[39;00m
+[0;32m   3820[0m [38;5;28;01mexcept[39;00m [38;5;167;01mTypeError[39;00m:
+[0;32m   3821[0m     [38;5;66;03m# If we have a listlike key, _check_indexing_error will raise[39;00m
+[0;32m   3822[0m     [38;5;66;03m#  InvalidIndexError. Otherwise we fall through and re-raise[39;00m
+[0;32m   3823[0m     [38;5;66;03m#  the TypeError.[39;00m
+[0;32m   3824[0m     [38;5;28mself[39m[38;5;241m.[39m_check_indexing_error(key)
+
+[1;31mKeyError[0m: 'NO2'
+
