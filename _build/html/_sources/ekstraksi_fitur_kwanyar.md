@@ -669,6 +669,40 @@ plt.xticks(
 plt.show()
 ```
 
+### Visualisasi Gabungan Timeseries (NO2, CO, SO2)
+
+Berikut adalah visualisasi yang menampilkan ketiga polutan secara bersamaan dalam satu gambar (dengan subplot agar skala tiap polutan tidak saling bertabrakan) setelah melalui proses pembersihan data:
+
+```{code-cell}
+:tags: [hide-input]
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Memuat ketiga data final
+df_no2 = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_final.csv")
+df_co = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_final.csv")
+df_so2 = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_final.csv")
+
+# Pastikan format tanggal sama
+df_no2['date'] = pd.to_datetime(df_no2['date'])
+df_co['date'] = pd.to_datetime(df_co['date'])
+df_so2['date'] = pd.to_datetime(df_so2['date'])
+
+# Menggabungkan ketiga data berdasarkan tanggal
+df_gabungan = df_no2[['date', 'NO2']].merge(df_co[['date', 'CO']], on='date', how='outer')
+df_gabungan = df_gabungan.merge(df_so2[['date', 'SO2']], on='date', how='outer')
+df_gabungan.set_index('date', inplace=True)
+
+# Membuat visualisasi gabungan (satu grafik / overlay)
+# Catatan: Karena rentang nilai tiap polutan mungkin berbeda jauh, garis yang bernilai kecil bisa terlihat lebih rata.
+df_gabungan.plot(figsize=(15, 7), title="Visualisasi Timeseries Tiga Polutan (NO2, CO, SO2) dalam 1 Grafik", grid=True, color=['red', 'gold', 'green'])
+
+plt.xlabel("Tanggal")
+plt.ylabel("Kadar Polutan")
+plt.tight_layout()
+plt.show()
+```
+
 ## Ekstraksi Fitur Deret Waktu (Time Series)
 
 Dengan data deret waktu polutan udara yang konsisten (tanpa tanggal hilang dan tanpa _outlier_), kita dapat melangkah ke ekstraksi berbagai fitur statistik, temporal, maupun spektral. Fitur-fitur ini sangat berguna sebagai parameter *input* yang merepresentasikan karakteristik *trend* harian polutan ke dalam model _machine learning_ maupun _deep learning_.

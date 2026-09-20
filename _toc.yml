@@ -9,3 +9,4 @@ chapters:
       - file: Statistika_Deskriptif_Polutan
       - file: domain_tsfel
       - file: ekstraksi_fitur_kwanyar
+      - file: clustering_k-means
