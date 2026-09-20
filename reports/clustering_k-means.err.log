@@ -1,0 +1,71 @@
+Traceback (most recent call last):
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\jupyter_cache\executors\utils.py", line 58, in single_nb_execution
+    executenb(
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 721, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 709, in async_execute
+    await self.async_execute_cell(
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+# 1. Memuat Data
+df = pd.read_csv('./source/Ekstraksi_fitur/ekstraksi_fitur_no2.csv')
+
+# Memisahkan kolom identitas dan kolom fitur numerik
+identitas = df[['id', 'nama', 'daerah']]
+fitur = df.drop(['id', 'nama', 'daerah'], axis=1)
+
+# 2. Standardisasi Data (Penting sebelum PCA dan K-Means)
+scaler = StandardScaler()
+fitur_scaled = scaler.fit_transform(fitur)
+
+# 3. Menerapkan PCA dengan 37 komponen
+pca = PCA(n_components=37)
+fitur_pca = pca.fit_transform(fitur_scaled)
+
+print(f"Bentuk data setelah PCA: {fitur_pca.shape}")
+print(f"Total rasio varians yang dijelaskan oleh 37 PCA: {np.sum(pca.explained_variance_ratio_) * 100:.2f}%")
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 4[39m
+[32m      1[39m [38;5;28;01mimport[39;00m pandas [38;5;28;01mas[39;00m pd
+[32m      2[39m [38;5;28;01mimport[39;00m numpy [38;5;28;01mas[39;00m np
+[32m      3[39m [38;5;28;01mimport[39;00m matplotlib.pyplot [38;5;28;01mas[39;00m plt
+[32m----> [39m[32m4[39m [38;5;28;01mimport[39;00m seaborn [38;5;28;01mas[39;00m sns
+[32m      5[39m [38;5;28;01mfrom[39;00m sklearn.preprocessing [38;5;28;01mimport[39;00m StandardScaler
+[32m      6[39m [38;5;28;01mfrom[39;00m sklearn.decomposition [38;5;28;01mimport[39;00m PCA
+[32m      7[39m [38;5;28;01mfrom[39;00m sklearn.cluster [38;5;28;01mimport[39;00m KMeans
+
+[31mModuleNotFoundError[39m: No module named 'seaborn'
+
