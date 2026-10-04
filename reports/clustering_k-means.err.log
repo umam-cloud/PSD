@@ -30,42 +30,158 @@ nbclient.exceptions.CellExecutionError: An error occurred while executing the fo
 ------------------
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
+import folium
+from folium.plugins import MiniMap
+import warnings
+warnings.filterwarnings('ignore')
 
-# 1. Memuat Data
-df = pd.read_csv('./source/Ekstraksi_fitur/ekstraksi_fitur_no2.csv')
+# 1. BACA FILE CSV HASIL CLUSTERING (LINIER)
+df_linier = pd.read_csv('./source/cluster_daerah/hasil_clustering_linear.csv')
 
-# Memisahkan kolom identitas dan kolom fitur numerik
-identitas = df[['id', 'nama', 'daerah']]
-fitur = df.drop(['id', 'nama', 'daerah'], axis=1)
+# Standarisasi penamaan label klaster menjadi 'Cluster 0' dan 'Cluster 1'
+if 'Cluster' in df_linier.columns:
+    df_linier['Cluster_Label'] = df_linier['Cluster'].astype(str).apply(
+        lambda x: f"Cluster {x.split('_')[-1]}" if "cluster_" in x.lower() else x
+    )
+else:
+    df_linier['Cluster_Label'] = 'Cluster 0' # fallback
 
-# 2. Standardisasi Data (Penting sebelum PCA dan K-Means)
-scaler = StandardScaler()
-fitur_scaled = scaler.fit_transform(fitur)
+# 2. KAMUS KOORDINAT KECAMATAN/DAERAH
+kamus_koordinat = {
+    "baron": (-7.6033, 112.0601),          
+    "sreseh": (-7.1983, 113.0805),         
+    "banyu ajuh": (-7.1585, 112.7280),     
+    "banyuajuh": (-7.1620, 112.7310),      
+    "kamal": (-7.1662, 112.7214),          
+    "labang": (-7.1294, 112.7936),         
+    "kwanyar": (-7.1604, 112.8569),        
+    "kecamatan bangkalan": (-7.0325, 112.7450), 
+    "bangkalan": (-7.0455, 112.7351),      
+    "gresik": (-7.1566, 112.6555),         
+    "paciran": (-6.8767, 112.3414),        
+    "jabon": (-7.5419, 112.7686),          
+    "widang": (-6.9850, 112.1647),         
+    "kalianget": (-7.0519, 113.9408),      
+    "kota sumenep": (-7.0086, 113.8617),   
+    "sumenep": (-7.0167, 113.8542),        
+    "tikala": (1.4820, 124.8540),          
+    "wonokromo": (-7.3006, 112.7383),      
+    "surabaya": (-7.2575, 112.7521),       
+    "pilangkenceng": (-7.4931, 111.6664),  
+    "madiun": (-7.6298, 111.5239),         
+    "sidoarjo": (-7.4478, 112.7183),       
+    "tuban": (-6.8976, 112.0463),          
+    "lamongan": (-7.1193, 112.4167),       
+    "sampang": (-7.1872, 113.2394),        
+    "pamekasan": (-7.1568, 113.4746),      
+    "malang": (-7.9666, 112.6326),         
+    "denpasar": (-8.6705, 115.2126),       
+    "jakarta": (-6.2088, 106.8456),        
+}
 
-# 3. Menerapkan PCA dengan 37 komponen
-pca = PCA(n_components=37)
-fitur_pca = pca.fit_transform(fitur_scaled)
+def cari_koordinat(nama_daerah, idx):
+    nama_lower = str(nama_daerah).lower()
+    for kata_kunci, (lat, lon) in kamus_koordinat.items():
+        if kata_kunci in nama_lower:
+            np.random.seed(idx * 42)
+            offset_lat = np.random.uniform(-0.015, 0.015)
+            offset_lon = np.random.uniform(-0.015, 0.015)
+            return lat + offset_lat, lon + offset_lon
+    return -7.2500 + (idx * 0.02), 112.7500 + (idx * 0.02)
 
-print(f"Bentuk data setelah PCA: {fitur_pca.shape}")
-print(f"Total rasio varians yang dijelaskan oleh 37 PCA: {np.sum(pca.explained_variance_ratio_) * 100:.2f}%")
+if "latitude" not in df_linier.columns or "longitude" not in df_linier.columns:
+    coords = [cari_koordinat(row["daerah"], i) for i, row in df_linier.iterrows()]
+    df_linier["latitude"] = [c[0] for c in coords]
+    df_linier["longitude"] = [c[1] for c in coords]
+
+# 3. FUNGSI RENDER PETA FOLIUM
+def render_peta_knime(df_data, nama_dataset="PCA-37", k_val=2, sil_score=0.822):
+    m = folium.Map(location=[-7.2, 113.0], zoom_start=8, tiles=None, control_scale=True)
+    folium.TileLayer("OpenStreetMap", name="OpenStreetMap (default)").add_to(m)
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        attr="Esri", name="Esri Street Map"
+    ).add_to(m)
+    
+    palet_warna = {"Cluster 0": "#e53935", "Cluster 1": "#1e88e5"}
+    unique_clusters = sorted(df_data["Cluster_Label"].unique())
+    fg_dict = {}
+    
+    for c_name in unique_clusters:
+        fg = folium.FeatureGroup(name=c_name, show=True)
+        fg.add_to(m)
+        fg_dict[c_name] = fg
+
+    df_sorted = df_data.sort_values(by="Cluster_Label", ascending=True)
+
+    for idx, row in df_sorted.iterrows():
+        c_name = row["Cluster_Label"]
+        c_num = c_name.split()[-1]
+        short_code = f"C{c_num}"
+        color = palet_warna.get(c_name, "#e53935")
+        z_idx = 1000 if c_name == "Cluster 1" else 100
+
+        icon_html = f"""
+        <div style="background-color: {color}; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif; font-size: 10px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.45);">{short_code}</div>
+        """
+
+        popup_html = f"""
+        <div style="font-family: Arial; font-size: 12px; min-width: 160px;">
+            <b>{row['daerah']}</b><hr style="margin: 4px 0;">
+            <b>Klaster:</b> {c_name} ({short_code})<br>
+            <b>Koordinat:</b> {row['latitude']:.4f}, {row['longitude']:.4f}
+        </div>
+        """
+
+        folium.Marker(
+            location=[row["latitude"], row["longitude"]],
+            icon=folium.DivIcon(html=icon_html, icon_size=(30, 30), icon_anchor=(15, 15)),
+            popup=folium.Popup(popup_html, max_width=250),
+            tooltip=f"{row['daerah']} ({short_code})",
+            z_index_offset=z_idx
+        ).add_to(fg_dict[c_name])
+
+    MiniMap(toggle_display=True, position="bottomright").add_to(m)
+    folium.LayerControl(collapsed=False, position="topright").add_to(m)
+
+    counts = df_data["Cluster_Label"].value_counts()
+    item_legenda_html = ""
+    for c_name in unique_clusters:
+        jml = counts.get(c_name, 0)
+        color = palet_warna.get(c_name, "#e53935")
+        item_legenda_html += f"""
+        <div style="display: flex; align-items: center; margin-bottom: 6px; font-size: 13px; color: #333;">
+            <span style="display:inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: {color}; margin-right: 10px;"></span>
+            <span>{c_name} &mdash; {jml} wilayah</span>
+        </div>
+        """
+
+    legend_card_html = f"""
+    <div style="position: fixed; bottom: 45px; left: 20px; z-index: 9999; background-color: white; padding: 16px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.18); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-width: 240px;">
+        <div style="font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;">Segmentasi Cluster</div>
+        <div style="font-size: 12px; color: #777; margin-bottom: 12px;">Dataset: {nama_dataset} | k={k_val} | Sil={sil_score:.3f}</div>
+        {item_legenda_html}
+        <div style="font-size: 11px; color: #999; margin-top: 10px;">Klik marker untuk detail</div>
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_card_html))
+    return m
+
+# Tampilkan Peta Linier
+peta_linier = render_peta_knime(df_linier, nama_dataset="Linier (PCA-37)", k_val=2, sil_score=0.822)
+peta_linier
 ------------------
 
 
 [31m---------------------------------------------------------------------------[39m
 [31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 4[39m
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 3[39m
 [32m      1[39m [38;5;28;01mimport[39;00m pandas [38;5;28;01mas[39;00m pd
 [32m      2[39m [38;5;28;01mimport[39;00m numpy [38;5;28;01mas[39;00m np
-[32m      3[39m [38;5;28;01mimport[39;00m matplotlib.pyplot [38;5;28;01mas[39;00m plt
-[32m----> [39m[32m4[39m [38;5;28;01mimport[39;00m seaborn [38;5;28;01mas[39;00m sns
-[32m      5[39m [38;5;28;01mfrom[39;00m sklearn.preprocessing [38;5;28;01mimport[39;00m StandardScaler
-[32m      6[39m [38;5;28;01mfrom[39;00m sklearn.decomposition [38;5;28;01mimport[39;00m PCA
-[32m      7[39m [38;5;28;01mfrom[39;00m sklearn.cluster [38;5;28;01mimport[39;00m KMeans
+[32m----> [39m[32m3[39m [38;5;28;01mimport[39;00m folium
+[32m      4[39m [38;5;28;01mfrom[39;00m folium.plugins [38;5;28;01mimport[39;00m MiniMap
+[32m      5[39m [38;5;28;01mimport[39;00m warnings
+[32m      6[39m warnings.filterwarnings([33m'ignore'[39m)
 
-[31mModuleNotFoundError[39m: No module named 'seaborn'
+[31mModuleNotFoundError[39m: No module named 'folium'
 

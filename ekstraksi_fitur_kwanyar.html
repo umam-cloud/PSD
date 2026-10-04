@@ -64,7 +64,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'ekstraksi_fitur_kwanyar';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="K-Means Clustering Polutan" href="clustering_k-means.html" />
+    <link rel="next" title="Clustering K-Means" href="clustering_k-means.html" />
     <link rel="prev" title="Domain TSFEL" href="domain_tsfel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -174,9 +174,10 @@
 <li class="toctree-l2"><a class="reference internal" href="Statistika_Deskriptif_Polutan.html">Metrik Statistika Deskriptif</a></li>
 <li class="toctree-l2"><a class="reference internal" href="domain_tsfel.html">Domain TSFEL</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Preprocessing dan Ekstraksi Fitur</a></li>
-<li class="toctree-l2"><a class="reference internal" href="clustering_k-means.html">K-Means Clustering Polutan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clustering_k-means.html">Clustering K-Means</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1"><a class="reference internal" href="klasifikasi-sawah.html">Klasifikasi Spasial Lahan Sawah dan Non-Sawah</a></li>
 </ul>
 
     </div>
@@ -372,11 +373,26 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing-penanganan-missing-value-outliers-dan-interpolasi">Preprocessing: Penanganan Missing Value, Outliers dan Interpolasi</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deteksi-missing-value">Deteksi Missing Value</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deteksi-dan-visualisasi-outlier-metode-iqr">Deteksi dan Visualisasi Outlier (Metode IQR)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data">Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2">Visualisasi Gabungan Timeseries (NO2, CO, SO2)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-deret-waktu-time-series">Ekstraksi Fitur Deret Waktu (Time Series)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data">Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metode-interpolasi-linier-standard">1. Metode Interpolasi Linier (Standard)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-linier">Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Linier)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metode-interpolasi-polinomial-iteratif">2. Metode Interpolasi Polinomial Iteratif</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-polinomial-iteratif">Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Polinomial Iteratif)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2-linier">Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Linier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2-polinomial">Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Polinomial</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-deret-waktu-time-series">Ekstraksi Fitur Deret Waktu (Time Series)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-data-tiga-polutan">1. Penggabungan File Data Tiga Polutan</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-linier">Penggabungan File Linier</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-polinomial">Penggabungan File Polinomial</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-tsfel-terpusat">2. Ekstraksi Fitur TSFEL Terpusat</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -881,9 +897,14 @@ Persentase data missing: 6.30%
 </div>
 </div>
 </section>
+</section>
 <section id="penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data">
-<h3>Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data<a class="headerlink" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data" title="Link to this heading">#</a></h3>
-<p>Setelah mendeteksi keberadaan outlier, langkah selanjutnya adalah menandainya sebagai nilai kosong (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>). Karena pada data deret waktu terdapat banyak tanggal yang terlewat, kita melengkapi rentang waktunya (dari tanggal terawal hingga terakhir). Kemudian, metode interpolasi linier diterapkan pada keseluruhan dataset untuk mengisi nilai kosong (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) tersebut. Di akhir proses, teknik <em>backward fill</em> (<code class="docutils literal notranslate"><span class="pre">bfill</span></code>) serta <em>forward fill</em> (<code class="docutils literal notranslate"><span class="pre">ffill</span></code>) dimanfaatkan guna mengatasi nilai kosong pada bagian pinggir atau awalan dan akhiran rangkaian data yang tidak bisa diinterpolasi linier.</p>
+<h2>Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data<a class="headerlink" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data" title="Link to this heading">#</a></h2>
+<p>Setelah mendeteksi keberadaan outlier, langkah selanjutnya adalah menandainya sebagai nilai kosong (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>). Karena pada data deret waktu terdapat banyak tanggal yang terlewat, kita melengkapi rentang waktunya (dari tanggal terawal hingga terakhir).</p>
+<p>Dalam tahapan ini kita bisa menerapkan dua variasi interpolasi, yaitu <strong>Interpolasi Linier</strong> maupun <strong>Interpolasi Polinomial Iteratif</strong> (untuk membersihkan outlier secara berulang hingga benar-benar habis).</p>
+<section id="metode-interpolasi-linier-standard">
+<h3>1. Metode Interpolasi Linier (Standard)<a class="headerlink" href="#metode-interpolasi-linier-standard" title="Link to this heading">#</a></h3>
+<p>Metode ini mengisi nilai kosong secara linier (garis lurus) antar data yang ada. Di akhir proses, teknik <em>backward fill</em> (<code class="docutils literal notranslate"><span class="pre">bfill</span></code>) serta <em>forward fill</em> (<code class="docutils literal notranslate"><span class="pre">ffill</span></code>) dimanfaatkan guna mengatasi nilai kosong pada awalan dan akhiran.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tandai outlier menjadi NaN</span>
 <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_cleaned&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span>
     <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)</span>
@@ -907,10 +928,12 @@ Persentase data missing: 6.30%
     <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">df_lengkap</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
     <span class="s2">&quot;polutan&quot;</span><span class="p">:</span> <span class="n">df_lengkap</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span>
 <span class="p">})</span>
-<span class="n">df_polutan_Kwanyar</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;nama_hasil_file_polutan_cleaned.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df_polutan_Kwanyar</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;namaPolutan_Bangkalan_final_linear.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Grafik setelah penanganan Outlier dan Penambahan Tanggal</p>
+</section>
+<section id="grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-linier">
+<h3>Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Linier)<a class="headerlink" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-linier" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -1264,8 +1287,231 @@ Index: []
 </div>
 </div>
 </section>
-<section id="visualisasi-gabungan-timeseries-no2-co-so2">
-<h3>Visualisasi Gabungan Timeseries (NO2, CO, SO2)<a class="headerlink" href="#visualisasi-gabungan-timeseries-no2-co-so2" title="Link to this heading">#</a></h3>
+<section id="metode-interpolasi-polinomial-iteratif">
+<h3>2. Metode Interpolasi Polinomial Iteratif<a class="headerlink" href="#metode-interpolasi-polinomial-iteratif" title="Link to this heading">#</a></h3>
+<p>Metode ini secara iteratif (berulang) akan mengecek batas IQR. Jika ada outlier baru setelah interpolasi sebelumnya, ia akan membersihkannya kembali dan melakukan interpolasi polinomial hingga data benar-benar bebas outlier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># Looping iteratif untuk membersihkan outlier sampai benar-benar habis</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># 1. Hitung ulang kuartil dan batas IQR berdasarkan data saat ini</span>
+    <span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+    <span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>
+
+    <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+
+    <span class="c1"># 2. Deteksi lokasi outlier</span>
+    <span class="n">outliers</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)</span>
+
+    <span class="c1"># Jika sudah tidak ada outlier yang terdeteksi, hentikan perulangan</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">outliers</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">break</span>
+
+    <span class="c1"># 3. Mask nilai outlier menjadi NaN, lalu isi dengan interpolasi polinomial + bfill + ffill</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">outliers</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;polynomial&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+
+<span class="c1"># 4. Simpan hasil akhir ke DataFrame baru dan ekspor ke CSV</span>
+<span class="n">df_polutan_Kwanyar</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="s2">&quot;polutan&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;polutan_filled&#39;</span><span class="p">]})</span>
+<span class="n">df_polutan_Kwanyar</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;namaPolutan_Bangkalan_polynomial.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data polutan berhasil diproses dan disimpan ke namaPolutan_Bangkalan_polynomial.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-polinomial-iteratif">
+<h3>Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Polinomial Iteratif)<a class="headerlink" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-polinomial-iteratif" title="Link to this heading">#</a></h3>
+<p>Karena menggunakan metode iteratif, maka pada data hasil polinomial seharusnya jumlah outlier yang tersisa menjadi 0 (atau jauh lebih sedikit) karena IQR akan terus mengecil hingga tidak ada nilai yang di luar kewajaran.</p>
+<ol class="arabic simple">
+<li><p>NO2 (Polinomial)</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/NO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Hitung IQR</span>
+<span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>
+
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+<span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+
+<span class="c1"># Filter outlier</span>
+<span class="n">outliers_iqr</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jumlah Outlier (IQR) - Polynomial:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;NO2 (Polynomial)&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Outliers&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Upper Bound (IQR)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cyan&#39;</span><span class="p">,</span>   <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Lower Bound (IQR)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Deteksi Outlier Data NO2 (Metode IQR) - Setelah Penanganan Polinomial&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Tanggal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Kadar NO2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">ticks</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jumlah Outlier (IQR) - Polynomial: 0
+</pre></div>
+</div>
+<img alt="_images/bcef648efbad4b42d2bff02a2ac6e073e13e3210d278b3cdea3dd8d981b8d920.png" src="_images/bcef648efbad4b42d2bff02a2ac6e073e13e3210d278b3cdea3dd8d981b8d920.png" />
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>CO (Polinomial)</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/CO_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Hitung IQR</span>
+<span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>
+
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+<span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+
+<span class="c1"># Filter outlier</span>
+<span class="n">outliers_iqr</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jumlah Outlier (IQR) - Polynomial:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CO (Polynomial)&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Outliers&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Upper Bound (IQR)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cyan&#39;</span><span class="p">,</span>   <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Lower Bound (IQR)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Deteksi Outlier Data CO (Metode IQR) - Setelah Penanganan Polinomial&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Tanggal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Kadar CO&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">ticks</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jumlah Outlier (IQR) - Polynomial: 0
+</pre></div>
+</div>
+<img alt="_images/50aa4e53dcbea3673ece452b8de38d80ab22f2d2b37e2e4f86263c28f5b0309c.png" src="_images/50aa4e53dcbea3673ece452b8de38d80ab22f2d2b37e2e4f86263c28f5b0309c.png" />
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>SO2 (Polinomial)</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/SO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Hitung IQR</span>
+<span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>
+
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+<span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+
+<span class="c1"># Filter outlier</span>
+<span class="n">outliers_iqr</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jumlah Outlier (IQR) - Polynomial:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SO2 (Polynomial)&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">outliers_iqr</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Outliers&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Upper Bound (IQR)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>   <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Lower Bound (IQR)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Deteksi Outlier Data SO2 (Metode IQR) - Setelah Penanganan Polinomial&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Tanggal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Kadar SO2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">ticks</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jumlah Outlier (IQR) - Polynomial: 0
+</pre></div>
+</div>
+<img alt="_images/988b3a5ee9ca000885a0b32256f9f91757ea1534a440fa39e4314d02c7631c5c.png" src="_images/988b3a5ee9ca000885a0b32256f9f91757ea1534a440fa39e4314d02c7631c5c.png" />
+</div>
+</div>
+</section>
+<section id="visualisasi-gabungan-timeseries-no2-co-so2-linier">
+<h3>Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Linier<a class="headerlink" href="#visualisasi-gabungan-timeseries-no2-co-so2-linier" title="Link to this heading">#</a></h3>
 <p>Berikut adalah visualisasi yang menampilkan ketiga polutan secara bersamaan dalam satu gambar (dengan subplot agar skala tiap polutan tidak saling bertabrakan) setelah melalui proses pembersihan data:</p>
 <div class="cell tag_hide-input docutils container">
 <details class="admonition hide above-input">
@@ -1309,33 +1555,136 @@ Index: []
 </div>
 </div>
 </section>
+<section id="visualisasi-gabungan-timeseries-no2-co-so2-polinomial">
+<h3>Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Polinomial<a class="headerlink" href="#visualisasi-gabungan-timeseries-no2-co-so2-polinomial" title="Link to this heading">#</a></h3>
+<p>Berikut adalah visualisasi dari gabungan ketiga polutan yang diproses menggunakan metode Polinomial Iteratif:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Memuat ketiga data final polinomial</span>
+<span class="n">df_no2_poly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/NO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df_co_poly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/CO_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df_so2_poly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/SO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Pastikan format tanggal sama</span>
+<span class="n">df_no2_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_no2_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">df_co_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_co_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">df_so2_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_so2_poly</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+
+<span class="c1"># Menggabungkan ketiga data berdasarkan tanggal</span>
+<span class="n">df_gabungan_poly</span> <span class="o">=</span> <span class="n">df_no2_poly</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;NO2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_co_poly</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+<span class="n">df_gabungan_poly</span> <span class="o">=</span> <span class="n">df_gabungan_poly</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_so2_poly</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;SO2&#39;</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+<span class="n">df_gabungan_poly</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Membuat visualisasi gabungan (satu grafik / overlay)</span>
+<span class="n">df_gabungan_poly</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Visualisasi Timeseries Tiga Polutan (NO2, CO, SO2) dalam 1 Grafik - Polinomial&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Tanggal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Kadar Polutan&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="_images/2e152abb032d0cc6be738b2129b89903d87151d5f78e0f420aed5acac1a6f716.png" src="_images/2e152abb032d0cc6be738b2129b89903d87151d5f78e0f420aed5acac1a6f716.png" />
+</div>
+</div>
+</section>
 </section>
 <section id="ekstraksi-fitur-deret-waktu-time-series">
 <h2>Ekstraksi Fitur Deret Waktu (Time Series)<a class="headerlink" href="#ekstraksi-fitur-deret-waktu-time-series" title="Link to this heading">#</a></h2>
-<p>Dengan data deret waktu polutan udara yang konsisten (tanpa tanggal hilang dan tanpa <em>outlier</em>), kita dapat melangkah ke ekstraksi berbagai fitur statistik, temporal, maupun spektral. Fitur-fitur ini sangat berguna sebagai parameter <em>input</em> yang merepresentasikan karakteristik <em>trend</em> harian polutan ke dalam model <em>machine learning</em> maupun <em>deep learning</em>.</p>
-<p>Kita akan memanfaatkan modul pustaka Python bernama <code class="docutils literal notranslate"><span class="pre">tsfel</span></code> (<em>Time Series Feature Extraction Library</em>) guna mempermudah proses komputasi serta standarisasi ragam tipe fitur.</p>
-<p>Berikut adalah sintaks kode implementasi untuk mengekstraksi sebanyak 68 fitur otomatis pada deret data NO₂ (dan berlaku perlakuan serupa untuk unsur polutan lainnya):</p>
+<p>Dengan data deret waktu polutan udara yang konsisten (tanpa tanggal hilang dan tanpa <em>outlier</em>), kita dapat melangkah ke ekstraksi berbagai fitur statistik, temporal, maupun spektral. Pada versi ini, kita tidak lagi mengekstraksi polutan secara terpisah, melainkan <strong>menggabungkannya terlebih dahulu ke dalam satu file</strong>, agar hasil ekstraksi menghasilkan satu baris data panjang yang mewakili kondisi ketiga polutan sekaligus.</p>
+<section id="penggabungan-file-data-tiga-polutan">
+<h3>1. Penggabungan File Data Tiga Polutan<a class="headerlink" href="#penggabungan-file-data-tiga-polutan" title="Link to this heading">#</a></h3>
+<p>Baik menggunakan interpolasi linier maupun polinomial, kita gabungkan ketiga file hasil pembersihan ke dalam satu dataset.</p>
+<section id="penggabungan-file-linier">
+<h4>Penggabungan File Linier<a class="headerlink" href="#penggabungan-file-linier" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Memuat data yang telah diproses (linear)</span>
+<span class="n">df_no2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur/NO2_Bangkalan_final.csv&quot;</span><span class="p">)</span>
+<span class="n">df_co</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur/CO_Bangkalan_final.csv&quot;</span><span class="p">)</span>
+<span class="n">df_so2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur/SO2_Bangkalan_final.csv&quot;</span><span class="p">)</span>
+
+<span class="n">dataframe_merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">df_no2</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;CO&quot;</span><span class="p">:</span> <span class="n">df_co</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;NO2&quot;</span><span class="p">:</span> <span class="n">df_no2</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;SO2&quot;</span><span class="p">:</span> <span class="n">df_so2</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">dataframe_merged</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;Polutan_Bangkalan_linear.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data polutan berhasil digabungkan dan disimpan ke Polutan_Bangkalan_linear.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data polutan berhasil digabungkan dan disimpan ke Polutan_Bangkalan_linear.csv
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="penggabungan-file-polinomial">
+<h4>Penggabungan File Polinomial<a class="headerlink" href="#penggabungan-file-polinomial" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Memuat data yang telah diproses (polinomial)</span>
+<span class="n">df_no2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur_polynomial/NO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df_co</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur_polynomial/CO_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df_so2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/ekstraksi_fitur_polynomial/SO2_Bangkalan_final_polynomial.csv&quot;</span><span class="p">)</span>
+
+<span class="n">dataframe_merged_poly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">df_no2</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;CO&quot;</span><span class="p">:</span> <span class="n">df_co</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;NO2&quot;</span><span class="p">:</span> <span class="n">df_no2</span><span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;SO2&quot;</span><span class="p">:</span> <span class="n">df_so2</span><span class="p">[</span><span class="s1">&#39;SO2&#39;</span><span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">dataframe_merged_poly</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;Polutan_Bangkalan_polynomial.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data polutan polinomial berhasil digabungkan dan disimpan ke Polutan_Bangkalan_polynomial.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data polutan polinomial berhasil digabungkan dan disimpan ke Polutan_Bangkalan_polynomial.csv
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="ekstraksi-fitur-tsfel-terpusat">
+<h3>2. Ekstraksi Fitur TSFEL Terpusat<a class="headerlink" href="#ekstraksi-fitur-tsfel-terpusat" title="Link to this heading">#</a></h3>
+<p>Kita memanfaatkan pustaka Python <code class="docutils literal notranslate"><span class="pre">tsfel</span></code> (<em>Time Series Feature Extraction Library</em>) guna mempermudah proses komputasi serta standarisasi ragam tipe fitur. Kode di bawah ini akan secara otomatis melakukan <em>looping</em> ekstraksi pada setiap polutan di file gabungan, menambahkan prefiks pada nama kolom (misal: <code class="docutils literal notranslate"><span class="pre">NO2_abs_energy</span></code>), dan menggabungkannya ke dalam 1 baris DataFrame final.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tsfel.feature_extraction.features</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tsfel_features</span>
 
-<span class="c1"># ---------- 1. Muat data yang sudah dibersihkan ----------</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;nama_file_polutan_cleaned.csv&#39;</span><span class="p">)</span>
+<span class="c1"># ---------- 1. Muat 1 file CSV utama yang berisi semua polutan ----------</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Polutan_Bangkalan_linear.csv&#39;</span><span class="p">)</span>
+
 <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">target_pollutant</span> <span class="o">=</span> <span class="s1">&#39;nama_polutan&#39;</span>
-
-<span class="c1"># Pastikan data di-casting ke tipe numerik.</span>
-<span class="n">df</span><span class="p">[</span><span class="n">target_pollutant</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">target_pollutant</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
-
-<span class="c1"># Interpolasi terakhir untuk berjaga-jaga apabila terdapat sisa format nan</span>
-<span class="n">df_clean</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span>
+<span class="n">pollutants</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NO2&#39;</span><span class="p">,</span> <span class="s1">&#39;SO2&#39;</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">]</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">signal_1d</span> <span class="o">=</span> <span class="n">df_clean</span><span class="p">[</span><span class="n">target_pollutant</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
 
-<span class="c1"># ---------- 2. Inisiasi 68 Daftar Fitur TSFEL ----------</span>
+<span class="c1"># ---------- 2. Daftar 68 Fitur TSFEL ----------</span>
 <span class="n">FEATURE_LIST</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;abs_energy auc autocorr average_power calc_centroid calc_max calc_mean</span>
 <span class="s2">calc_median calc_min calc_std calc_var dfa distance ecdf ecdf_percentile ecdf_percentile_count</span>
 <span class="s2">ecdf_slope entropy fundamental_frequency higuchi_fractal_dimension hist_mode human_range_energy</span>
@@ -1348,11 +1697,10 @@ Index: []
 <span class="s2">spectral_spread spectral_variation spectrogram_mean_coeff sum_abs_diff wavelet_abs_mean</span>
 <span class="s2">wavelet_energy wavelet_entropy wavelet_std wavelet_var zero_cross&quot;&quot;&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jumlah fitur yang diminta:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">FEATURE_LIST</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jumlah fitur per polutan: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">FEATURE_LIST</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total target fitur keseluruhan: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">FEATURE_LIST</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">pollutants</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># ---------- 3. Fungsi ekstraksi dan penyeragaman output  ----------</span>
-
-<span class="c1"># Fungsi bantuan (helper) merubah output multivariat TSFEL menjadi float tunggal/skalar</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_scalar</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;values&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
@@ -1361,7 +1709,6 @@ Index: []
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-<span class="c1"># Fungsi map pemanggilan fungsi TSFEL </span>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_one</span><span class="p">(</span><span class="n">fn_name</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">fs</span><span class="p">):</span>
     <span class="n">fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tsfel_features</span><span class="p">,</span> <span class="n">fn_name</span><span class="p">)</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span>
@@ -1371,22 +1718,44 @@ Index: []
         <span class="n">result</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">to_scalar</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-<span class="c1"># Lakukan ekstraksi iteratif pada fitur</span>
-<span class="n">row</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="k">for</span> <span class="n">fn_name</span> <span class="ow">in</span> <span class="n">FEATURE_LIST</span><span class="p">:</span>
-    <span class="n">row</span><span class="p">[</span><span class="n">fn_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_one</span><span class="p">(</span><span class="n">fn_name</span><span class="p">,</span> <span class="n">signal_1d</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="c1"># Dictionary untuk menampung seluruh hasil ekstraksi</span>
+<span class="n">combined_row</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">extracted_features_final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">row</span><span class="p">])</span>
+<span class="c1"># ---------- 4. Looping untuk membersihkan dan mengekstraksi tiap polutan ----------</span>
+<span class="k">for</span> <span class="n">pollutant</span> <span class="ow">in</span> <span class="n">pollutants</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Memproses polutan: </span><span class="si">{</span><span class="n">pollutant</span><span class="si">}</span><span class="s2"> ---&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Berhasil! Jumlah fitur yang diekstrak pada </span><span class="si">{</span><span class="n">target_pollutant</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">extracted_features_final</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">df_poly</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">pollutant</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
 
-<span class="c1"># Export hasil ke file CSV</span>
-<span class="n">extracted_features_final</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;nama_hasil_ekstraksi_fitur_TSFEL.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Handling outlier dengan IQR (sebagai safeguard tambahan)</span>
+    <span class="n">Q1</span> <span class="o">=</span> <span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">Q3</span> <span class="o">=</span> <span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+    <span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>
+    <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+    <span class="n">df_poly</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">df_poly</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">),</span> <span class="n">pollutant</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="c1"># Interpolasi waktu dan cleaning</span>
+    <span class="n">df_clean</span> <span class="o">=</span> <span class="n">df_poly</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span>
+    <span class="n">signal_1d</span> <span class="o">=</span> <span class="n">df_clean</span><span class="p">[</span><span class="n">pollutant</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># Ekstraksi fitur dan beri prefix nama polutan (misal: NO2_abs_energy)</span>
+    <span class="k">for</span> <span class="n">fn_name</span> <span class="ow">in</span> <span class="n">FEATURE_LIST</span><span class="p">:</span>
+        <span class="n">feature_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pollutant</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fn_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">combined_row</span><span class="p">[</span><span class="n">feature_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_one</span><span class="p">(</span><span class="n">fn_name</span><span class="p">,</span> <span class="n">signal_1d</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+<span class="c1"># ---------- 5. Simpan ke DataFrame final ----------</span>
+<span class="n">extracted_features_final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">combined_row</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Berhasil! Total kolom akhir yang dihasilkan: </span><span class="si">{</span><span class="n">extracted_features_final</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">output_filename</span> <span class="o">=</span> <span class="s1">&#39;Bangkalan_linear.csv&#39;</span>
+<span class="n">extracted_features_final</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File berhasil disimpan sebagai: </span><span class="si">{</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Data hasil ekstraksi fitur menggunakan TSFEL</p>
 <ol class="arabic simple">
-<li><p>NO2</p></li>
+<li><p>Hasil Ekstraksi Fitur Linier</p></li>
 </ol>
 <div class="cell tag_hide-input docutils container">
 <details class="admonition hide above-input">
@@ -1395,8 +1764,8 @@ Index: []
 <p class="expanded admonition-title">Hide code cell source</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur/NO2_Kwanyar_TSFEL.csv&quot;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_ekstraksi_cek</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;source/Ekstraksi_fitur/Bangkalan_linear.csv&quot;</span><span class="p">)</span>
+<span class="n">df_ekstraksi_cek</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1420,27 +1789,27 @@ Index: []
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>abs_energy</th>
-      <th>auc</th>
-      <th>autocorr</th>
-      <th>average_power</th>
-      <th>calc_centroid</th>
-      <th>calc_max</th>
-      <th>calc_mean</th>
-      <th>calc_median</th>
-      <th>calc_min</th>
-      <th>calc_std</th>
+      <th>NO2_abs_energy</th>
+      <th>NO2_auc</th>
+      <th>NO2_autocorr</th>
+      <th>NO2_average_power</th>
+      <th>NO2_calc_centroid</th>
+      <th>NO2_calc_max</th>
+      <th>NO2_calc_mean</th>
+      <th>NO2_calc_median</th>
+      <th>NO2_calc_min</th>
+      <th>NO2_calc_std</th>
       <th>...</th>
-      <th>spectral_spread</th>
-      <th>spectral_variation</th>
-      <th>spectrogram_mean_coeff</th>
-      <th>sum_abs_diff</th>
-      <th>wavelet_abs_mean</th>
-      <th>wavelet_energy</th>
-      <th>wavelet_entropy</th>
-      <th>wavelet_std</th>
-      <th>wavelet_var</th>
-      <th>zero_cross</th>
+      <th>CO_spectral_spread</th>
+      <th>CO_spectral_variation</th>
+      <th>CO_spectrogram_mean_coeff</th>
+      <th>CO_sum_abs_diff</th>
+      <th>CO_wavelet_abs_mean</th>
+      <th>CO_wavelet_energy</th>
+      <th>CO_wavelet_entropy</th>
+      <th>CO_wavelet_std</th>
+      <th>CO_wavelet_var</th>
+      <th>CO_zero_cross</th>
     </tr>
   </thead>
   <tbody>
@@ -1457,24 +1826,24 @@ Index: []
       <td>-0.000003</td>
       <td>0.000014</td>
       <td>...</td>
-      <td>0.15309</td>
-      <td>0.262819</td>
-      <td>2.946177e-10</td>
-      <td>0.002209</td>
-      <td>0.000001</td>
-      <td>0.000018</td>
-      <td>2.126274</td>
-      <td>0.000018</td>
-      <td>3.696060e-10</td>
-      <td>6.0</td>
+      <td>0.126886</td>
+      <td>0.593124</td>
+      <td>0.000012</td>
+      <td>0.490562</td>
+      <td>0.001608</td>
+      <td>0.0067</td>
+      <td>2.122624</td>
+      <td>0.00648</td>
+      <td>0.000048</td>
+      <td>0.0</td>
     </tr>
   </tbody>
 </table>
-<p>1 rows × 68 columns</p>
+<p>1 rows × 204 columns</p>
 </div></div></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>CO</p></li>
+<li><p>Hasil Ekstraksi Fitur Polinomial</p></li>
 </ol>
 <div class="cell tag_hide-input docutils container">
 <details class="admonition hide above-input">
@@ -1483,8 +1852,8 @@ Index: []
 <p class="expanded admonition-title">Hide code cell source</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur/CO_Kwanyar_TSFEL.csv&quot;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_ekstraksi_cek_poly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur_polynomial/Bangkalan_polynomial.csv&quot;</span><span class="p">)</span>
+<span class="n">df_ekstraksi_cek_poly</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1508,42 +1877,42 @@ Index: []
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>abs_energy</th>
-      <th>auc</th>
-      <th>autocorr</th>
-      <th>average_power</th>
-      <th>calc_centroid</th>
-      <th>calc_max</th>
-      <th>calc_mean</th>
-      <th>calc_median</th>
-      <th>calc_min</th>
-      <th>calc_std</th>
+      <th>NO2_abs_energy</th>
+      <th>NO2_auc</th>
+      <th>NO2_autocorr</th>
+      <th>NO2_average_power</th>
+      <th>NO2_calc_centroid</th>
+      <th>NO2_calc_max</th>
+      <th>NO2_calc_mean</th>
+      <th>NO2_calc_median</th>
+      <th>NO2_calc_min</th>
+      <th>NO2_calc_std</th>
       <th>...</th>
-      <th>spectral_spread</th>
-      <th>spectral_variation</th>
-      <th>spectrogram_mean_coeff</th>
-      <th>sum_abs_diff</th>
-      <th>wavelet_abs_mean</th>
-      <th>wavelet_energy</th>
-      <th>wavelet_entropy</th>
-      <th>wavelet_std</th>
-      <th>wavelet_var</th>
-      <th>zero_cross</th>
+      <th>CO_spectral_spread</th>
+      <th>CO_spectral_variation</th>
+      <th>CO_spectrogram_mean_coeff</th>
+      <th>CO_sum_abs_diff</th>
+      <th>CO_wavelet_abs_mean</th>
+      <th>CO_wavelet_energy</th>
+      <th>CO_wavelet_entropy</th>
+      <th>CO_wavelet_std</th>
+      <th>CO_wavelet_var</th>
+      <th>CO_zero_cross</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.295985</td>
-      <td>10.316484</td>
-      <td>3.0</td>
-      <td>0.000813</td>
-      <td>180.354669</td>
-      <td>0.035389</td>
-      <td>0.028343</td>
-      <td>0.028357</td>
-      <td>0.021601</td>
-      <td>0.00275</td>
+      <td>3.561887e-07</td>
+      <td>0.010139</td>
+      <td>13.0</td>
+      <td>9.785405e-10</td>
+      <td>173.038786</td>
+      <td>0.000065</td>
+      <td>0.000028</td>
+      <td>0.000026</td>
+      <td>-0.000003</td>
+      <td>0.000014</td>
       <td>...</td>
       <td>0.126886</td>
       <td>0.593124</td>
@@ -1558,97 +1927,10 @@ Index: []
     </tr>
   </tbody>
 </table>
-<p>1 rows × 68 columns</p>
+<p>1 rows × 204 columns</p>
 </div></div></div>
 </div>
-<ol class="arabic simple" start="3">
-<li><p>SO2</p></li>
-</ol>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./source/Ekstraksi_fitur/SO2_Kwanyar_TSFEL.csv&quot;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>abs_energy</th>
-      <th>auc</th>
-      <th>autocorr</th>
-      <th>average_power</th>
-      <th>calc_centroid</th>
-      <th>calc_max</th>
-      <th>calc_mean</th>
-      <th>calc_median</th>
-      <th>calc_min</th>
-      <th>calc_std</th>
-      <th>...</th>
-      <th>spectral_spread</th>
-      <th>spectral_variation</th>
-      <th>spectrogram_mean_coeff</th>
-      <th>sum_abs_diff</th>
-      <th>wavelet_abs_mean</th>
-      <th>wavelet_energy</th>
-      <th>wavelet_entropy</th>
-      <th>wavelet_std</th>
-      <th>wavelet_var</th>
-      <th>zero_cross</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.000019</td>
-      <td>0.058176</td>
-      <td>2.0</td>
-      <td>5.198692e-08</td>
-      <td>201.287422</td>
-      <td>0.000637</td>
-      <td>0.000033</td>
-      <td>0.000036</td>
-      <td>-0.000592</td>
-      <td>0.000225</td>
-      <td>...</td>
-      <td>0.146254</td>
-      <td>0.154005</td>
-      <td>8.342241e-08</td>
-      <td>0.055033</td>
-      <td>0.000001</td>
-      <td>0.000328</td>
-      <td>2.154088</td>
-      <td>0.000328</td>
-      <td>1.141906e-07</td>
-      <td>103.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>1 rows × 68 columns</p>
-</div></div></div>
-</div>
+</section>
 </section>
 </section>
 
@@ -1696,7 +1978,7 @@ Index: []
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">K-Means Clustering Polutan</p>
+        <p class="prev-next-title">Clustering K-Means</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1721,11 +2003,26 @@ Index: []
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing-penanganan-missing-value-outliers-dan-interpolasi">Preprocessing: Penanganan Missing Value, Outliers dan Interpolasi</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deteksi-missing-value">Deteksi Missing Value</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deteksi-dan-visualisasi-outlier-metode-iqr">Deteksi dan Visualisasi Outlier (Metode IQR)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data">Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2">Visualisasi Gabungan Timeseries (NO2, CO, SO2)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-deret-waktu-time-series">Ekstraksi Fitur Deret Waktu (Time Series)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#penanganan-outlier-melengkapi-tanggal-dan-interpolasi-data">Penanganan Outlier, Melengkapi Tanggal, dan Interpolasi Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metode-interpolasi-linier-standard">1. Metode Interpolasi Linier (Standard)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-linier">Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Linier)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metode-interpolasi-polinomial-iteratif">2. Metode Interpolasi Polinomial Iteratif</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grafik-setelah-penanganan-outlier-dan-penambahan-tanggal-metode-polinomial-iteratif">Grafik setelah penanganan Outlier dan Penambahan Tanggal (Metode Polinomial Iteratif)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2-linier">Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Linier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualisasi-gabungan-timeseries-no2-co-so2-polinomial">Visualisasi Gabungan Timeseries (NO2, CO, SO2) - Polinomial</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-deret-waktu-time-series">Ekstraksi Fitur Deret Waktu (Time Series)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-data-tiga-polutan">1. Penggabungan File Data Tiga Polutan</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-linier">Penggabungan File Linier</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#penggabungan-file-polinomial">Penggabungan File Polinomial</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ekstraksi-fitur-tsfel-terpusat">2. Ekstraksi Fitur TSFEL Terpusat</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
