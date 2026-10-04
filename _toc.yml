@@ -10,3 +10,4 @@ chapters:
       - file: domain_tsfel
       - file: ekstraksi_fitur_kwanyar
       - file: clustering_k-means
+  - file: klasifikasi-sawah

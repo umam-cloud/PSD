@@ -1,102 +1,116 @@
 Traceback (most recent call last):
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\jupyter_cache\executors\utils.py", line 58, in single_nb_execution
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\jupyter_cache\executors\utils.py", line 58, in single_nb_execution
     executenb(
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 1323, in execute
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 1323, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
-  File "C:\laragon\bin\python\python-3.10\lib\asyncio\base_events.py", line 646, in run_until_complete
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 721, in run_until_complete
     return future.result()
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 709, in async_execute
+           ~~~~~~~~~~~~~^^
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "C:\laragon\bin\python\python-3.10\lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
+  File "C:\Users\Fatihul Umam\AppData\Local\Programs\Python\Python313\Lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-df = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_Terkini.csv")
-df['date'] = pd.to_datetime(df['date'])
-df = df.sort_values('date').reset_index(drop=True)
+import pandas as pd
 
-# Hitung IQR
-Q1 = df['NO2'].quantile(0.25)
-Q3 = df['NO2'].quantile(0.75)
-IQR = Q3 - Q1
+# Memuat data yang telah diproses (polinomial)
+df_no2 = pd.read_csv("./source/ekstraksi_fitur/NO2_Bangkalan_final_polynomial.csv")
+df_co = pd.read_csv("./source/ekstraksi_fitur/CO_Bangkalan_final_polynomial.csv")
+df_so2 = pd.read_csv("./source/ekstraksi_fitur/SO2_Bangkalan_final_polynomial.csv")
 
-lower_bound = Q1 - 1.5 * IQR
-upper_bound = Q3 + 1.5 * IQR
+dataframe_merged_poly = pd.DataFrame({
+    "date": df_no2['date'],
+    "CO": df_co['CO'],
+    "NO2": df_no2['NO2'],
+    "SO2": df_so2['SO2']
+})
 
-plt.figure(figsize=(15,5))
-plt.plot(df['date'], df['NO2'], label="NO2", linewidth=1)
-
-plt.scatter(outliers_iqr['date'], outliers_iqr['NO2'],
-            color='red', marker='o', label="Outliers")
-
-plt.axhline(upper_bound, color='orange', linestyle='dashed', label="Upper Bound (IQR)")
-plt.axhline(lower_bound, color='blue',   linestyle='dashed', label="Lower Bound (IQR)")
-
-plt.title("Deteksi Outlier Data NO2 (Metode IQR)")
-plt.xlabel("Tanggal")
-plt.ylabel("Kadar NO2")
-plt.legend()
-plt.tight_layout()
-plt.xticks(
-    ticks=[df['date'].iloc[0], df['date'].iloc[-1]],
-    labels=[df['date'].iloc[0].strftime('%Y-%m-%d'),
-            df['date'].iloc[-1].strftime('%Y-%m-%d')]
-)
-plt.show()
+dataframe_merged_poly.to_csv("Polutan_Bangkalan_polynomial.csv", index=False)
+print("Data polutan polinomial berhasil digabungkan dan disimpan ke Polutan_Bangkalan_polynomial.csv")
 ------------------
 
 
-[1;31m---------------------------------------------------------------------------[0m
-[1;31mKeyError[0m                                  Traceback (most recent call last)
-File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\indexes\base.py:3812[0m, in [0;36mIndex.get_loc[1;34m(self, key)[0m
-[0;32m   3811[0m [38;5;28;01mtry[39;00m:
-[1;32m-> 3812[0m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_engine[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mcasted_key[49m[43m)[49m
-[0;32m   3813[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m [38;5;28;01mas[39;00m err:
+[31m---------------------------------------------------------------------------[39m
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[21][39m[32m, line 4[39m
+[32m      1[39m [38;5;28;01mimport[39;00m pandas [38;5;28;01mas[39;00m pd
+[32m      2[39m 
+[32m      3[39m [38;5;66;03m# Memuat data yang telah diproses (polinomial)[39;00m
+[32m----> [39m[32m4[39m df_no2 = pd.read_csv([33m"./source/ekstraksi_fitur/NO2_Bangkalan_final_polynomial.csv"[39m)
+[32m      5[39m df_co = pd.read_csv([33m"./source/ekstraksi_fitur/CO_Bangkalan_final_polynomial.csv"[39m)
+[32m      6[39m df_so2 = pd.read_csv([33m"./source/ekstraksi_fitur/SO2_Bangkalan_final_polynomial.csv"[39m)
+[32m      7[39m 
 
-File [1;32mpandas/_libs/index.pyx:167[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[1;34m()[0m
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1026[39m, in [36mread_csv[39m[34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)[39m
+[32m   1013[39m kwds_defaults = _refine_defaults_read(
+[32m   1014[39m     dialect,
+[32m   1015[39m     delimiter,
+[32m   (...)[39m[32m   1022[39m     dtype_backend=dtype_backend,
+[32m   1023[39m )
+[32m   1024[39m kwds.update(kwds_defaults)
+[32m-> [39m[32m1026[39m [38;5;28;01mreturn[39;00m [30;43m_read[39;49m[30;43m([39;49m[30;43mfilepath_or_buffer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mkwds[39;49m[30;43m)[39;49m
 
-File [1;32mpandas/_libs/index.pyx:196[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[1;34m()[0m
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:620[39m, in [36m_read[39m[34m(filepath_or_buffer, kwds)[39m
+[32m    617[39m _validate_names(kwds.get([33m"[39m[33mnames[39m[33m"[39m, [38;5;28;01mNone[39;00m))
+[32m    619[39m [38;5;66;03m# Create the parser.[39;00m
+[32m--> [39m[32m620[39m parser = [30;43mTextFileReader[39;49m[30;43m([39;49m[30;43mfilepath_or_buffer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwds[39;49m[30;43m)[39;49m
+[32m    622[39m [38;5;28;01mif[39;00m chunksize [38;5;129;01mor[39;00m iterator:
+[32m    623[39m     [38;5;28;01mreturn[39;00m parser
 
-File [1;32mpandas/_libs/hashtable_class_helper.pxi:7088[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[1;34m()[0m
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1620[39m, in [36mTextFileReader.__init__[39m[34m(self, f, engine, **kwds)[39m
+[32m   1617[39m     [38;5;28mself[39m.options[[33m"[39m[33mhas_index_names[39m[33m"[39m] = kwds[[33m"[39m[33mhas_index_names[39m[33m"[39m]
+[32m   1619[39m [38;5;28mself[39m.handles: IOHandles | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m
+[32m-> [39m[32m1620[39m [38;5;28mself[39m._engine = [30;43mself[39;49m[30;43m.[39;49m[30;43m_make_engine[39;49m[30;43m([39;49m[30;43mf[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mengine[39;49m[30;43m)[39;49m
 
-File [1;32mpandas/_libs/hashtable_class_helper.pxi:7096[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[1;34m()[0m
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1880[39m, in [36mTextFileReader._make_engine[39m[34m(self, f, engine)[39m
+[32m   1878[39m     [38;5;28;01mif[39;00m [33m"[39m[33mb[39m[33m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m mode:
+[32m   1879[39m         mode += [33m"[39m[33mb[39m[33m"[39m
+[32m-> [39m[32m1880[39m [38;5;28mself[39m.handles = [30;43mget_handle[39;49m[30;43m([39;49m
+[32m   1881[39m [30;43m    [39;49m[30;43mf[39;49m[30;43m,[39;49m
+[32m   1882[39m [30;43m    [39;49m[30;43mmode[39;49m[30;43m,[39;49m
+[32m   1883[39m [30;43m    [39;49m[30;43mencoding[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mencoding[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1884[39m [30;43m    [39;49m[30;43mcompression[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mcompression[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1885[39m [30;43m    [39;49m[30;43mmemory_map[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mmemory_map[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mFalse[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1886[39m [30;43m    [39;49m[30;43mis_text[39;49m[30;43m=[39;49m[30;43mis_text[39;49m[30;43m,[39;49m
+[32m   1887[39m [30;43m    [39;49m[30;43merrors[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mencoding_errors[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m"[39;49m[30;43mstrict[39;49m[30;43m"[39;49m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1888[39m [30;43m    [39;49m[30;43mstorage_options[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mstorage_options[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1889[39m [30;43m[39;49m[30;43m)[39;49m
+[32m   1890[39m [38;5;28;01massert[39;00m [38;5;28mself[39m.handles [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m
+[32m   1891[39m f = [38;5;28mself[39m.handles.handle
 
-[1;31mKeyError[0m: 'NO2'
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\common.py:873[39m, in [36mget_handle[39m[34m(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)[39m
+[32m    868[39m [38;5;28;01melif[39;00m [38;5;28misinstance[39m(handle, [38;5;28mstr[39m):
+[32m    869[39m     [38;5;66;03m# Check whether the filename is to be opened in binary mode.[39;00m
+[32m    870[39m     [38;5;66;03m# Binary mode does not support 'encoding' and 'newline'.[39;00m
+[32m    871[39m     [38;5;28;01mif[39;00m ioargs.encoding [38;5;129;01mand[39;00m [33m"[39m[33mb[39m[33m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m ioargs.mode:
+[32m    872[39m         [38;5;66;03m# Encoding[39;00m
+[32m--> [39m[32m873[39m         handle = [30;43mopen[39;49m[30;43m([39;49m
+[32m    874[39m [30;43m            [39;49m[30;43mhandle[39;49m[30;43m,[39;49m
+[32m    875[39m [30;43m            [39;49m[30;43mioargs[39;49m[30;43m.[39;49m[30;43mmode[39;49m[30;43m,[39;49m
+[32m    876[39m [30;43m            [39;49m[30;43mencoding[39;49m[30;43m=[39;49m[30;43mioargs[39;49m[30;43m.[39;49m[30;43mencoding[39;49m[30;43m,[39;49m
+[32m    877[39m [30;43m            [39;49m[30;43merrors[39;49m[30;43m=[39;49m[30;43merrors[39;49m[30;43m,[39;49m
+[32m    878[39m [30;43m            [39;49m[30;43mnewline[39;49m[30;43m=[39;49m[30;43m"[39;49m[30;43m"[39;49m[30;43m,[39;49m
+[32m    879[39m [30;43m        [39;49m[30;43m)[39;49m
+[32m    880[39m     [38;5;28;01melse[39;00m:
+[32m    881[39m         [38;5;66;03m# Binary mode[39;00m
+[32m    882[39m         handle = [38;5;28mopen[39m(handle, ioargs.mode)
 
-The above exception was the direct cause of the following exception:
-
-[1;31mKeyError[0m                                  Traceback (most recent call last)
-Cell [1;32mIn[4], line 16[0m
-[0;32m     13[0m plt[38;5;241m.[39mfigure(figsize[38;5;241m=[39m([38;5;241m15[39m,[38;5;241m5[39m))
-[0;32m     14[0m plt[38;5;241m.[39mplot(df[[38;5;124m'[39m[38;5;124mdate[39m[38;5;124m'[39m], df[[38;5;124m'[39m[38;5;124mNO2[39m[38;5;124m'[39m], label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mNO2[39m[38;5;124m"[39m, linewidth[38;5;241m=[39m[38;5;241m1[39m)
-[1;32m---> 16[0m plt[38;5;241m.[39mscatter(outliers_iqr[[38;5;124m'[39m[38;5;124mdate[39m[38;5;124m'[39m], [43moutliers_iqr[49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mNO2[39;49m[38;5;124;43m'[39;49m[43m][49m,
-[0;32m     17[0m             color[38;5;241m=[39m[38;5;124m'[39m[38;5;124mred[39m[38;5;124m'[39m, marker[38;5;241m=[39m[38;5;124m'[39m[38;5;124mo[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mOutliers[39m[38;5;124m"[39m)
-[0;32m     19[0m plt[38;5;241m.[39maxhline(upper_bound, color[38;5;241m=[39m[38;5;124m'[39m[38;5;124morange[39m[38;5;124m'[39m, linestyle[38;5;241m=[39m[38;5;124m'[39m[38;5;124mdashed[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mUpper Bound (IQR)[39m[38;5;124m"[39m)
-[0;32m     20[0m plt[38;5;241m.[39maxhline(lower_bound, color[38;5;241m=[39m[38;5;124m'[39m[38;5;124mblue[39m[38;5;124m'[39m,   linestyle[38;5;241m=[39m[38;5;124m'[39m[38;5;124mdashed[39m[38;5;124m'[39m, label[38;5;241m=[39m[38;5;124m"[39m[38;5;124mLower Bound (IQR)[39m[38;5;124m"[39m)
-
-File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\frame.py:4107[0m, in [0;36mDataFrame.__getitem__[1;34m(self, key)[0m
-[0;32m   4105[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mcolumns[38;5;241m.[39mnlevels [38;5;241m>[39m [38;5;241m1[39m:
-[0;32m   4106[0m     [38;5;28;01mreturn[39;00m [38;5;28mself[39m[38;5;241m.[39m_getitem_multilevel(key)
-[1;32m-> 4107[0m indexer [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mcolumns[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mkey[49m[43m)[49m
-[0;32m   4108[0m [38;5;28;01mif[39;00m is_integer(indexer):
-[0;32m   4109[0m     indexer [38;5;241m=[39m [indexer]
-
-File [1;32mC:\laragon\bin\python\python-3.10\lib\site-packages\pandas\core\indexes\base.py:3819[0m, in [0;36mIndex.get_loc[1;34m(self, key)[0m
-[0;32m   3814[0m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m(casted_key, [38;5;28mslice[39m) [38;5;129;01mor[39;00m (
-[0;32m   3815[0m         [38;5;28misinstance[39m(casted_key, abc[38;5;241m.[39mIterable)
-[0;32m   3816[0m         [38;5;129;01mand[39;00m [38;5;28many[39m([38;5;28misinstance[39m(x, [38;5;28mslice[39m) [38;5;28;01mfor[39;00m x [38;5;129;01min[39;00m casted_key)
-[0;32m   3817[0m     ):
-[0;32m   3818[0m         [38;5;28;01mraise[39;00m InvalidIndexError(key)
-[1;32m-> 3819[0m     [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(key) [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01merr[39;00m
-[0;32m   3820[0m [38;5;28;01mexcept[39;00m [38;5;167;01mTypeError[39;00m:
-[0;32m   3821[0m     [38;5;66;03m# If we have a listlike key, _check_indexing_error will raise[39;00m
-[0;32m   3822[0m     [38;5;66;03m#  InvalidIndexError. Otherwise we fall through and re-raise[39;00m
-[0;32m   3823[0m     [38;5;66;03m#  the TypeError.[39;00m
-[0;32m   3824[0m     [38;5;28mself[39m[38;5;241m.[39m_check_indexing_error(key)
-
-[1;31mKeyError[0m: 'NO2'
+[31mFileNotFoundError[39m: [Errno 2] No such file or directory: './source/ekstraksi_fitur/NO2_Bangkalan_final_polynomial.csv'
 
