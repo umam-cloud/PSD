@@ -129,10 +129,15 @@ Berhasil diunduh: sentinel2_sawah_nonsawah.tif
 Akuisisi citra dilakukan menggunakan *bounding box* gabungan dari ke-100 titik sampel pada koleksi **`SENTINEL2_L2A`** (*Bottom-of-Atmosphere Reflectance*) dengan batas tutupan awan maksimum `< 10%` dan agregasi temporal `median_time()` untuk menghasilkan komposit citra bebas awan berformat **GeoTIFF (`.tif`)**.
 
 ### Fitur Spektral dan Indeks Turunan yang Diekstrak:
+
+Sentinel-2 Level-2A menyediakan data citra dengan nilai pantulan permukaan (*Bottom-of-Atmosphere Reflectance*). Pada tahap ini, kita mengekstrak 5 band spektral utama dan menghitung 2 indeks turunan yang sangat relevan untuk membedakan karakteristik sawah (padi) dan non-sawah:
+
 1. **Band Spektral Utama:**
-   * `B02` (*Blue* - 490 nm), `B03` (*Green* - 560 nm), `B04` (*Red* - 665 nm) dengan resolusi spasial 10 meter.
-   * `B08` (*Near Infrared / NIR* - 842 nm) untuk mendeteksi pantulan klorofil tanaman padi.
-   * `B11` (*Short-Wave Infrared / SWIR* - 1610 nm) untuk mendeteksi kelembapan tanah dan genangan air.
+   * **`B02` (Blue / Biru - 490 nm)**: Resolusi spasial 10m. Berguna untuk membedakan tanah dan vegetasi, serta identifikasi badan air dangkal (pantulan air lebih tinggi di spektrum biru).
+   * **`B03` (Green / Hijau - 560 nm)**: Resolusi spasial 10m. Sangat sensitif terhadap pantulan klorofil, sehingga berguna untuk mengidentifikasi tingkat kehijauan vegetasi pada fase pertumbuhan padi.
+   * **`B04` (Red / Merah - 665 nm)**: Resolusi spasial 10m. Klorofil menyerap cahaya merah secara kuat, menjadikannya band kunci yang selalu dipasangkan dengan band NIR untuk ekstraksi batas vegetasi (NDVI).
+   * **`B08` (Near Infrared / NIR - 842 nm)**: Resolusi spasial 10m. Band paling penting untuk pengamatan vegetasi karena sel jaringan daun sehat memantulkan spektrum NIR sangat tinggi. Sawah dengan padi aktif akan terlihat terang (nilai pantulan tinggi) di band ini.
+   * **`B11` (Short-Wave Infrared / SWIR - 1610 nm)**: Resolusi spasial 20m. Spektrum ini sangat sensitif terhadap kandungan air, baik di dalam tanaman maupun di tanah. Dalam konteks klasifikasi sawah, band ini krusial untuk mendeteksi fase persiapan lahan atau genangan air (karena genangan air menyerap gelombang SWIR dengan kuat).
 2. **Normalized Difference Vegetation Index (NDVI):**
 
    $$\text{NDVI} = \frac{B08 - B04}{B08 + B04}$$
