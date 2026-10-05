@@ -604,16 +604,41 @@
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
 <span class="p">)</span>
 
+<span class="nb">print</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <span class="n">model_rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">model_rf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model_rf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 
-<span class="n">df_ekstraksi_cek_poly</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">df_ekstraksi_cek_poly</span>
 </pre></div>
 </div>
 </div>
 </details>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>B02   B03   B04   B08   B11   NDVI      NDWI     
+280   524   457   3263  2443  0.754301  -0.723264    1
+340   747   493   3280  2194  0.738669  -0.629004    1
+382   693   578   2927  2175  0.670185  -0.617127    1
+384   615   667   2547  1721  0.584941  -0.611006    1
+387   615   992   2084  2762  0.355007  -0.544276    1
+                                                    ..
+2132  2251  2390  2511  2086  0.024689  -0.054599    1
+2470  2769  3118  3475  3685  0.054148  -0.113069    1
+3114  3138  3142  3182  3773  0.006325  -0.006962    1
+3793  4165  4436  4601  4931  0.018258  -0.049738    1
+5461  5918  5903  6216  4305  0.025827  -0.024559    1
+Name: count, Length: 79, dtype: int64
+
+Kelas
+Non-Sawah    40
+Sawah        39
+Name: count, dtype: int64
+</pre></div>
+</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -716,8 +741,93 @@
       <td>Sawah</td>
       <td>1</td>
     </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>94</th>
+      <td>676</td>
+      <td>971</td>
+      <td>1352</td>
+      <td>2498</td>
+      <td>2963</td>
+      <td>0.297662</td>
+      <td>-0.440184</td>
+      <td>706299.191362</td>
+      <td>9.209598e+06</td>
+      <td>Non-Sawah</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>387</td>
+      <td>615</td>
+      <td>992</td>
+      <td>2084</td>
+      <td>2762</td>
+      <td>0.355007</td>
+      <td>-0.544276</td>
+      <td>706293.717784</td>
+      <td>9.209561e+06</td>
+      <td>Non-Sawah</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>690</td>
+      <td>964</td>
+      <td>1259</td>
+      <td>2443</td>
+      <td>3013</td>
+      <td>0.319827</td>
+      <td>-0.434106</td>
+      <td>706564.976001</td>
+      <td>9.209393e+06</td>
+      <td>Non-Sawah</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>627</td>
+      <td>811</td>
+      <td>1192</td>
+      <td>2182</td>
+      <td>2991</td>
+      <td>0.293420</td>
+      <td>-0.458069</td>
+      <td>706699.568850</td>
+      <td>9.209600e+06</td>
+      <td>Non-Sawah</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>896</td>
+      <td>1140</td>
+      <td>1501</td>
+      <td>2355</td>
+      <td>2917</td>
+      <td>0.221473</td>
+      <td>-0.347639</td>
+      <td>706105.453266</td>
+      <td>9.209348e+06</td>
+      <td>Non-Sawah</td>
+      <td>0</td>
+    </tr>
   </tbody>
 </table>
+<p>99 rows × 11 columns</p>
 </div></div></div>
 </div>
 </section>

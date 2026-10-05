@@ -206,11 +206,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
+print(X_train.value_counts())
+print()
+print(y_train.value_counts())
+print(f"\n\n")
+
 model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 model_rf.fit(X_train, y_train)
 y_pred = model_rf.predict(X_test)
 
-df_ekstraksi_cek_poly.head(5)
+df_ekstraksi_cek_poly
 ```
 
 ## 3. Hasil Evaluasi Klasifikasi 2 Kelas (Random Forest)
