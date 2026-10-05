@@ -219,7 +219,23 @@ Dataset berhasil disimpan ke 'dataset_100sampel_sawah_nonsawah.csv'
 ```{code-cell} ipython3
 :tags: [hide-input]
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
 df_ekstraksi_cek_poly = pd.read_csv("./source/klasifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv")
+
+fitur_kolom = ["B02", "B03", "B04", "B08", "B11", "NDVI", "NDWI"]
+X = df_ekstraksi_cek_poly[fitur_kolom]
+y = df_ekstraksi_cek_poly["Kelas"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
+model_rf.fit(X_train, y_train)
+y_pred = model_rf.predict(X_test)
+
 df_ekstraksi_cek_poly.head(5)
 ```
 
@@ -232,41 +248,10 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+import rasterio
 import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
-    ConfusionMatrixDisplay,
-    accuracy_score,
-    classification_report,
-    confusion_matrix,
-)
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import ConfusionMatrixDisplay
 
-# 1. Muat dataset dari CSV
-df_dataset = pd.read_csv("./source/klasifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv")
-
-# 2. Siapkan fitur dan target
-fitur_kolom = [c for c in ["B02", "B03", "B04", "B08", "B11", "NDVI", "NDWI"] if c in df_dataset.columns]
-X = df_dataset[fitur_kolom]
-y = df_dataset["Kelas"]
-
-# 3. Split 80% Training & 20% Testing
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
-
-# 4. Latih model Random Forest
-model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
-model_rf.fit(X_train, y_train)
-y_pred = model_rf.predict(X_test)
-
-print(f"Akurasi Testing : {accuracy_score(y_test, y_pred) * 100:.2f}%")
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
-```
-
-```{code-cell} ipython3
 # ==============================================================================
 # A. VISUALISASI CONFUSION MATRIX & FEATURE IMPORTANCE
 # ==============================================================================
@@ -293,5 +278,62 @@ axes[1].set_xlabel("Nilai Kepentingan (Importance)")
 axes[1].set_title("Kontribusi Fitur Spektral Sentinel-2A")
 
 plt.tight_layout()
+plt.savefig("evaluasi_klasifikasi_sawah.png", dpi=300)
+plt.show()
+
+# ==============================================================================
+# B. KLASIFIKASI SELURUH PIKSEL CITRA (.TIF) MENJADI PETA SAWAH VS NON-SAWAH
+# ==============================================================================
+with rasterio.open("./source/klasifikasi_sawah/sentinel2_sawah_nonsawah.tif") as src:
+  img = src.read()  # Shape: (5 bands, height, width)
+  profil_raster = src.profile
+  bounds = src.bounds
+
+# Ambil masing-masing band (B02, B03, B04, B08, B11)
+b02, b03, b04, b08, b11 = (
+    img[0].astype(float),
+    img[1].astype(float),
+    img[2].astype(float),
+    img[3].astype(float),
+    img[4].astype(float),
+)
+
+# Hitung NDVI dan NDWI untuk seluruh piksel di citra .tif
+ndvi_map = (b08 - b04) / (b08 + b04 + 1e-6)
+ndwi_map = (b03 - b08) / (b03 + b08 + 1e-6)
+
+# Susun seluruh piksel menjadi matriks 2D (baris = piksel, kolom = 7 fitur)
+stack_fitur = np.stack([b02, b03, b04, b08, b11, ndvi_map, ndwi_map], axis=-1)
+h, w, c = stack_fitur.shape
+piksel_2d = np.nan_to_num(stack_fitur.reshape(-1, c), nan=0.0)
+
+# Prediksi seluruh piksel menggunakan model Random Forest yang sudah dilatih
+prediksi_label = model_rf.predict(piksel_2d)
+
+# Ubah hasil prediksi ('Sawah' -> 1, 'Non-Sawah' -> 0) kembali ke ukuran gambar 2D (h, w)
+peta_biner = np.where(prediksi_label == "Sawah", 1, 0).reshape(h, w)
+
+# Tampilkan Peta Hasil Klasifikasi Spasial
+plt.figure(figsize=(9, 7))
+cmap_sawah = mcolors.ListedColormap(["#e74c3c", "#2ecc71"])  # Merah & Hijau
+plt.imshow(
+    peta_biner,
+    cmap=cmap_sawah,
+    extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
+)
+
+# Legenda Peta
+patch_sawah = mpatches.Patch(color="#2ecc71", label="Kelas 1: Sawah")
+patch_nonsawah = mpatches.Patch(color="#e74c3c", label="Kelas 0: Non-Sawah")
+plt.legend(handles=[patch_sawah, patch_nonsawah], loc="upper right")
+plt.title(
+    "Peta Klasifikasi Spasial Lahan Sawah vs Non-Sawah (Sentinel-2A)",
+    fontsize=12,
+    fontweight="bold",
+)
+plt.xlabel("Koordinat X / Longitude")
+plt.ylabel("Koordinat Y / Latitude")
+plt.tight_layout()
+plt.savefig("peta_klasifikasi_raster_sawah.png", dpi=300)
 plt.show()
 ```
