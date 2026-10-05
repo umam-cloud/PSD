@@ -580,35 +580,6 @@
 <span class="n">df_dataset</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;dataset_100sampel_sawah_nonsawah.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataset berhasil disimpan ke &#39;dataset_100sampel_sawah_nonsawah.csv&#39;&quot;</span><span class="p">)</span>
 <span class="n">display</span><span class="p">(</span><span class="n">df_dataset</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-
-<span class="c1"># ==============================================================================</span>
-<span class="c1"># 5. PROSES KLASIFIKASI 2 KELAS (SAWAH VS NON-SAWAH)</span>
-<span class="c1"># ==============================================================================</span>
-<span class="n">fitur_kolom</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;B02&quot;</span><span class="p">,</span> <span class="s2">&quot;B03&quot;</span><span class="p">,</span> <span class="s2">&quot;B04&quot;</span><span class="p">,</span> <span class="s2">&quot;B08&quot;</span><span class="p">,</span> <span class="s2">&quot;B11&quot;</span><span class="p">,</span> <span class="s2">&quot;NDVI&quot;</span><span class="p">,</span> <span class="s2">&quot;NDWI&quot;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">df_dataset</span><span class="p">[</span><span class="n">fitur_kolom</span><span class="p">]</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">df_dataset</span><span class="p">[</span><span class="s2">&quot;Kelas&quot;</span><span class="p">]</span>
-
-<span class="c1"># Split 80% Training (40 Sawah + 40 Non-Sawah) &amp; 20% Testing (10 Sawah + 10 Non-Sawah)</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
-<span class="p">)</span>
-
-<span class="c1"># Latih model Random Forest</span>
-<span class="n">model_rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">model_rf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="c1"># Evaluasi pada data uji</span>
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model_rf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HASIL EVALUASI KLASIFIKASI 2 KELAS ===&quot;</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Akurasi Testing : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confusion Matrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Classification Report:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-</pre></div>
-</div>
-<p><strong>Output:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span> <span class="n">berhasil</span> <span class="n">disimpan</span> <span class="n">ke</span> <span class="s1">&#39;dataset_100sampel_sawah_nonsawah.csv&#39;</span>
 </pre></div>
 </div>
 <p><strong>Output:</strong></p>
@@ -754,6 +725,13 @@
 <section id="hasil-evaluasi-klasifikasi-2-kelas-random-forest">
 <h2>3. Hasil Evaluasi Klasifikasi 2 Kelas (Random Forest)<a class="headerlink" href="#hasil-evaluasi-klasifikasi-2-kelas-random-forest" title="Link to this heading">#</a></h2>
 <p>Dataset 100 sampel dibagi menggunakan skema <em>Stratified Train-Test Split</em> dengan proporsi <strong>80% Data Latih (80 sampel: 40 Sawah, 40 Non-Sawah)</strong> dan <strong>20% Data Uji (20 sampel: 10 Sawah, 10 Non-Sawah)</strong>.</p>
+<p><strong>Cara Kerja Random Forest pada Klasifikasi Ini:</strong>
+Algoritma <em>Random Forest Classifier</em> dipilih karena kemampuannya yang tangguh (<em>robust</em>) dalam menangani data penginderaan jauh yang seringkali memiliki fitur spektral yang berkorelasi (seperti antar band berdekatan). Model ini bekerja melalui pendekatan <em>ensemble learning</em>, yaitu:</p>
+<ol class="arabic simple">
+<li><p><strong>Pembuatan Banyak Pohon (Forest):</strong> Model membangun banyak <em>Decision Tree</em> atau Pohon Keputusan (pada <em>script</em> menggunakan <code class="docutils literal notranslate"><span class="pre">n_estimators=100</span></code>, artinya 100 pohon).</p></li>
+<li><p><strong>Pengambilan Sampel Acak (Bagging):</strong> Setiap pohon dilatih menggunakan kumpulan sampel acak dari data latih, dan pada tiap percabangannya, algoritma hanya mempertimbangkan subset fitur secara acak. Hal ini mencegah model dari <em>overfitting</em> (terlalu menghafal data latih).</p></li>
+<li><p><strong>Voting Mayoritas:</strong> Ketika melakukan prediksi piksel baru, ke-100 pohon ini akan memberikan hasil klasifikasi masing-masing. Kelas dengan “suara” (voting) terbanyak akan dipilih sebagai hasil akhir (Sawah atau Non-Sawah).</p></li>
+</ol>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
