@@ -28,16 +28,112 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-df_ekstraksi_cek_poly = pd.read_csv("./source/kalsifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv")
-df_ekstraksi_cek_poly.head(5)
+import matplotlib.colors as mcolors
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import numpy as np
+import rasterio
+import seaborn as sns
+from sklearn.metrics import ConfusionMatrixDisplay
+
+# ==============================================================================
+# A. VISUALISASI CONFUSION MATRIX & FEATURE IMPORTANCE
+# ==============================================================================
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+# 1. Plot Confusion Matrix
+ConfusionMatrixDisplay.from_predictions(
+    y_test, y_pred, cmap="Greens", ax=axes[0], colorbar=False
+)
+axes[0].set_title("Confusion Matrix (Data Uji 20 Sampel)")
+
+# 2. Plot Tingkat Kepentingan Fitur (Band & Indeks Spektral)
+importances = model_rf.feature_importances_
+indices = np.argsort(importances)
+axes[1].barh(
+    range(len(indices)),
+    importances[indices],
+    color="#2ecc71",
+    edgecolor="black",
+)
+axes[1].set_yticks(range(len(indices)))
+axes[1].set_yticklabels([fitur_kolom[i] for i in indices])
+axes[1].set_xlabel("Nilai Kepentingan (Importance)")
+axes[1].set_title("Kontribusi Fitur Spektral Sentinel-2A")
+
+plt.tight_layout()
+plt.savefig("evaluasi_klasifikasi_sawah.png", dpi=300)
+plt.show()
+
+# ==============================================================================
+# B. KLASIFIKASI SELURUH PIKSEL CITRA (.TIF) MENJADI PETA SAWAH VS NON-SAWAH
+# ==============================================================================
+with rasterio.open("./source/klasifikasi_sawah/sentinel2_sawah_nonsawah.tif") as src:
+  img = src.read()  # Shape: (5 bands, height, width)
+  profil_raster = src.profile
+  bounds = src.bounds
+
+# Ambil masing-masing band (B02, B03, B04, B08, B11)
+b02, b03, b04, b08, b11 = (
+    img[0].astype(float),
+    img[1].astype(float),
+    img[2].astype(float),
+    img[3].astype(float),
+    img[4].astype(float),
+)
+
+# Hitung NDVI dan NDWI untuk seluruh piksel di citra .tif
+ndvi_map = (b08 - b04) / (b08 + b04 + 1e-6)
+ndwi_map = (b03 - b08) / (b03 + b08 + 1e-6)
+
+# Susun seluruh piksel menjadi matriks 2D (baris = piksel, kolom = 7 fitur)
+stack_fitur = np.stack([b02, b03, b04, b08, b11, ndvi_map, ndwi_map], axis=-1)
+h, w, c = stack_fitur.shape
+piksel_2d = np.nan_to_num(stack_fitur.reshape(-1, c), nan=0.0)
+
+# Prediksi seluruh piksel menggunakan model Random Forest yang sudah dilatih
+prediksi_label = model_rf.predict(piksel_2d)
+
+# Ubah hasil prediksi ('Sawah' -> 1, 'Non-Sawah' -> 0) kembali ke ukuran gambar 2D (h, w)
+peta_biner = np.where(prediksi_label == "Sawah", 1, 0).reshape(h, w)
+
+# Tampilkan Peta Hasil Klasifikasi Spasial
+plt.figure(figsize=(9, 7))
+cmap_sawah = mcolors.ListedColormap(["#e74c3c", "#2ecc71"])  # Merah & Hijau
+plt.imshow(
+    peta_biner,
+    cmap=cmap_sawah,
+    extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
+)
+
+# Legenda Peta
+patch_sawah = mpatches.Patch(color="#2ecc71", label="Kelas 1: Sawah")
+patch_nonsawah = mpatches.Patch(color="#e74c3c", label="Kelas 0: Non-Sawah")
+plt.legend(handles=[patch_sawah, patch_nonsawah], loc="upper right")
+plt.title(
+    "Peta Klasifikasi Spasial Lahan Sawah vs Non-Sawah (Sentinel-2A)",
+    fontsize=12,
+    fontweight="bold",
+)
+plt.xlabel("Koordinat X / Longitude")
+plt.ylabel("Koordinat Y / Latitude")
+plt.tight_layout()
+plt.savefig("peta_klasifikasi_raster_sawah.png", dpi=300)
+plt.show()
 ------------------
 
 
 [31m---------------------------------------------------------------------------[39m
 [31mNameError[39m                                 Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 1[39m
-[32m----> [39m[32m1[39m df_ekstraksi_cek_poly = pd.read_csv([33m"./source/kalsifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv"[39m)
-[32m      2[39m df_ekstraksi_cek_poly.head([32m5[39m)
+[36mCell[39m[36m [39m[32mIn[2][39m[32m, line 16[39m
+[32m     12[39m fig, axes = plt.subplots([32m1[39m, [32m2[39m, figsize=([32m12[39m, [32m4.5[39m))
+[32m     13[39m 
+[32m     14[39m [38;5;66;03m# 1. Plot Confusion Matrix[39;00m
+[32m     15[39m ConfusionMatrixDisplay.from_predictions(
+[32m---> [39m[32m16[39m     y_test, y_pred, cmap=[33m"Greens"[39m, ax=axes[[32m0[39m], colorbar=[38;5;28;01mFalse[39;00m
+[32m     17[39m )
+[32m     18[39m axes[[32m0[39m].set_title([33m"Confusion Matrix (Data Uji 20 Sampel)"[39m)
+[32m     19[39m 
 
-[31mNameError[39m: name 'pd' is not defined
+[31mNameError[39m: name 'y_test' is not defined
 
