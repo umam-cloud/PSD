@@ -118,7 +118,7 @@ print(f"Berhasil diunduh: {nama_tif}")
 Jumlah sampel Sawah     : 50
 Jumlah sampel Non-Sawah : 50
 Total sampel gabungan   : 100
-Bounding Box Gabungan: {'west': 111.87169010000001, 'south': -6.9056517, 'east': 111.8930379, 'north': -6.8848906}
+Bounding Box Gabungan: {'west': 112.8379972, 'south': -7.17026, 'east': 112.88253089999999, 'north': -7.1414391}
 Authenticated using refresh token.
 Mengunduh citra Sentinel-2A (.tif)...
 Berhasil diunduh: sentinel2_sawah_nonsawah.tif
