@@ -193,6 +193,13 @@ display(df_dataset.head())
 ```{code-cell} ipython3
 :tags: [hide-input]
 import pandas as pd
+df_ekstraksi_cek_poly = pd.read_csv("./source/klasifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv")
+df_ekstraksi_cek_poly
+```
+
+```{code-cell} ipython3
+:tags: [hide-input]
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -214,8 +221,6 @@ print(f"\n\n")
 model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 model_rf.fit(X_train, y_train)
 y_pred = model_rf.predict(X_test)
-
-df_ekstraksi_cek_poly
 ```
 
 ## 3. Hasil Evaluasi Klasifikasi 2 Kelas (Random Forest)
