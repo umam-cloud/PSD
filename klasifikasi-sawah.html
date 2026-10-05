@@ -406,7 +406,9 @@
 </section>
 <section id="desain-pengambilan-sampel-ground-truth">
 <h2>1. Desain Pengambilan Sampel (Ground Truth)<a class="headerlink" href="#desain-pengambilan-sampel-ground-truth" title="Link to this heading">#</a></h2>
-<p>Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (<em>balanced dataset</em>) dalam format vektor (<code class="docutils literal notranslate"><span class="pre">Shapefile</span></code> / <code class="docutils literal notranslate"><span class="pre">GeoJSON</span></code>):</p>
+<p>Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (<em>balanced dataset</em>) dalam format vektor (<code class="docutils literal notranslate"><span class="pre">Shapefile</span></code> / <code class="docutils literal notranslate"><span class="pre">GeoJSON</span></code>).</p>
+<p><strong>Catatan Mengenai Format Geometri (Point vs Poligon):</strong>
+Data vektor yang digunakan (<code class="docutils literal notranslate"><span class="pre">sawah.zip</span></code> dan <code class="docutils literal notranslate"><span class="pre">non-sawah.zip</span></code>) pada dasarnya bisa berupa poligon (Polygon) maupun titik (Point) yang didigitasi melalui QGIS. Akan tetapi, di dalam proses ekstraksinya nanti, <em>script</em> Python secara otomatis menghitung <strong>titik tengah (centroid)</strong> dari geometri tersebut (<code class="docutils literal notranslate"><span class="pre">geom.centroid</span></code>). Ini berarti, meskipun Anda menggambar sebuah poligon yang luas, <em>script</em> ini hanya akan mengambil <strong>satu nilai piksel</strong> yang berada tepat di titik tengah poligon tersebut untuk mewakili keseluruhan sampel.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-left"><p>Kelas Target</p></th>

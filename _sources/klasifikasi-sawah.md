@@ -32,7 +32,10 @@ pip install scikit-learn
 
 ## 1. Desain Pengambilan Sampel (Ground Truth)
 
-Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (*balanced dataset*) dalam format vektor (`Shapefile` / `GeoJSON`):
+Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (*balanced dataset*) dalam format vektor (`Shapefile` / `GeoJSON`).
+
+**Catatan Mengenai Format Geometri (Point vs Poligon):**
+Data vektor yang digunakan (`sawah.zip` dan `non-sawah.zip`) pada dasarnya bisa berupa poligon (Polygon) maupun titik (Point) yang didigitasi melalui QGIS. Akan tetapi, di dalam proses ekstraksinya nanti, *script* Python secara otomatis menghitung **titik tengah (centroid)** dari geometri tersebut (`geom.centroid`). Ini berarti, meskipun Anda menggambar sebuah poligon yang luas, *script* ini hanya akan mengambil **satu nilai piksel** yang berada tepat di titik tengah poligon tersebut untuk mewakili keseluruhan sampel.
 
 | Kelas Target | Kode Label | Jumlah Sampel | Karakteristik Objek |
 | :--- | :---: | :---: | :--- |
