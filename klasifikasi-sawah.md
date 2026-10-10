@@ -32,7 +32,10 @@ pip install scikit-learn
 
 ## 1. Desain Pengambilan Sampel (Ground Truth)
 
-Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (*balanced dataset*) dalam format vektor (`Shapefile` / `GeoJSON`):
+Pengambilan sampel dilakukan secara spasial dengan membagi objek pengamatan ke dalam dua kelas seimbang (*balanced dataset*) dalam format vektor (`Shapefile` / `GeoJSON`).
+
+**Catatan Mengenai Format Geometri (Point vs Poligon):**
+Data vektor yang digunakan (`sawah.zip` dan `non-sawah.zip`) pada dasarnya bisa berupa poligon (Polygon) maupun titik (Point) yang didigitasi melalui QGIS. Akan tetapi, di dalam proses ekstraksinya nanti, *script* Python secara otomatis menghitung **titik tengah (centroid)** dari geometri tersebut (`geom.centroid`). Ini berarti, meskipun Anda menggambar sebuah poligon yang luas, *script* ini hanya akan mengambil **satu nilai piksel** yang berada tepat di titik tengah poligon tersebut untuk mewakili keseluruhan sampel.
 
 | Kelas Target | Kode Label | Jumlah Sampel | Karakteristik Objek |
 | :--- | :---: | :---: | :--- |
@@ -118,7 +121,7 @@ print(f"Berhasil diunduh: {nama_tif}")
 Jumlah sampel Sawah     : 50
 Jumlah sampel Non-Sawah : 50
 Total sampel gabungan   : 100
-Bounding Box Gabungan: {'west': 111.87169010000001, 'south': -6.9056517, 'east': 111.8930379, 'north': -6.8848906}
+Bounding Box Gabungan: {'west': 112.8379972, 'south': -7.17026, 'east': 112.88253089999999, 'north': -7.1414391}
 Authenticated using refresh token.
 Mengunduh citra Sentinel-2A (.tif)...
 Berhasil diunduh: sentinel2_sawah_nonsawah.tif
@@ -186,40 +189,16 @@ df_dataset["Target"] = gdf_gabungan["label"]
 df_dataset.to_csv("dataset_100sampel_sawah_nonsawah.csv", index=False)
 print("Dataset berhasil disimpan ke 'dataset_100sampel_sawah_nonsawah.csv'")
 display(df_dataset.head())
-
-# ==============================================================================
-# 5. PROSES KLASIFIKASI 2 KELAS (SAWAH VS NON-SAWAH)
-# ==============================================================================
-fitur_kolom = ["B02", "B03", "B04", "B08", "B11", "NDVI", "NDWI"]
-X = df_dataset[fitur_kolom]
-y = df_dataset["Kelas"]
-
-# Split 80% Training (40 Sawah + 40 Non-Sawah) & 20% Testing (10 Sawah + 10 Non-Sawah)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
-
-# Latih model Random Forest
-model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
-model_rf.fit(X_train, y_train)
-
-# Evaluasi pada data uji
-y_pred = model_rf.predict(X_test)
-print(
-    "\n=== HASIL EVALUASI KLASIFIKASI 2 KELAS ==="
-)
-print(f"Akurasi Testing : {accuracy_score(y_test, y_pred) * 100:.2f}%")
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
 ```
 
 **Output:**
 
+```{code-cell} ipython3
+:tags: [hide-input]
+import pandas as pd
+df_ekstraksi_cek_poly = pd.read_csv("./source/klasifikasi_sawah/dataset_100sampel_sawah_nonsawah.csv")
+df_ekstraksi_cek_poly
 ```
-Dataset berhasil disimpan ke 'dataset_100sampel_sawah_nonsawah.csv'
-```
-
-**Output:**
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -237,16 +216,25 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
+print(X_train.value_counts())
+print()
+print(y_train.value_counts())
+print(f"\n\n")
+
 model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 model_rf.fit(X_train, y_train)
 y_pred = model_rf.predict(X_test)
-
-df_ekstraksi_cek_poly.head(5)
 ```
 
 ## 3. Hasil Evaluasi Klasifikasi 2 Kelas (Random Forest)
 
 Dataset 100 sampel dibagi menggunakan skema *Stratified Train-Test Split* dengan proporsi **80% Data Latih (80 sampel: 40 Sawah, 40 Non-Sawah)** dan **20% Data Uji (20 sampel: 10 Sawah, 10 Non-Sawah)**.
+
+**Cara Kerja Random Forest pada Klasifikasi Ini:**
+Algoritma *Random Forest Classifier* dipilih karena kemampuannya yang tangguh (*robust*) dalam menangani data penginderaan jauh yang seringkali memiliki fitur spektral yang berkorelasi (seperti antar band berdekatan). Model ini bekerja melalui pendekatan *ensemble learning*, yaitu:
+1. **Pembuatan Banyak Pohon (Forest):** Model membangun banyak *Decision Tree* atau Pohon Keputusan (pada *script* menggunakan `n_estimators=100`, artinya 100 pohon).
+2. **Pengambilan Sampel Acak (Bagging):** Setiap pohon dilatih menggunakan kumpulan sampel acak dari data latih, dan pada tiap percabangannya, algoritma hanya mempertimbangkan subset fitur secara acak. Hal ini mencegah model dari *overfitting* (terlalu menghafal data latih).
+3. **Voting Mayoritas:** Ketika melakukan prediksi piksel baru, ke-100 pohon ini akan memberikan hasil klasifikasi masing-masing. Kelas dengan "suara" (voting) terbanyak akan dipilih sebagai hasil akhir (Sawah atau Non-Sawah).
 
 ```{code-cell} ipython3
 import matplotlib.colors as mcolors
