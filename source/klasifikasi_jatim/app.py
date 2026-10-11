@@ -37,7 +37,7 @@ DATA = BASE / "data" if (BASE / "data").is_dir() else BASE
 
 st.set_page_config(page_title="Klasifikasi LULC Jawa Timur", layout="wide")
 
-# CSS kustom untuk tampilan dashboard yang bersih, elegan, dan adaptif (Light & Dark Mode)
+# CSS kustom estetika modern yang adaptif terhadap mode gelap dan terang
 st.markdown(
     """
     <style>
@@ -47,76 +47,21 @@ st.markdown(
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Variabel Adaptif Light/Dark Theme */
-    :root {
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --text-muted: #64748b;
-        --card-bg: #ffffff;
-        --card-border: #e2e8f0;
-        --card-hover-border: #cbd5e1;
-        --badge-bg: #f1f5f9;
-        --badge-text: #475569;
-        --tab-active-bg: #f8fafc;
-    }
-
-    /* Adaptasi Otomatis ke Dark Mode */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --card-hover-border: rgba(255, 255, 255, 0.25);
-            --badge-bg: rgba(255, 255, 255, 0.08);
-            --badge-text: #e2e8f0;
-            --tab-active-bg: rgba(255, 255, 255, 0.08);
-        }
-    }
-
-    /* Dukungan Tema Gelap Eksplisit Streamlit */
-    [data-theme="dark"], .stApp[data-theme="dark"], [data-testid="stAppViewContainer"][data-theme="dark"] {
-        --text-primary: #f8fafc !important;
-        --text-secondary: #cbd5e1 !important;
-        --text-muted: #94a3b8 !important;
-        --card-bg: rgba(255, 255, 255, 0.05) !important;
-        --card-border: rgba(255, 255, 255, 0.12) !important;
-        --card-hover-border: rgba(255, 255, 255, 0.25) !important;
-        --badge-bg: rgba(255, 255, 255, 0.08) !important;
-        --badge-text: #e2e8f0 !important;
-        --tab-active-bg: rgba(255, 255, 255, 0.08) !important;
-    }
-
-    /* Judul Utama */
-    .main-title {
-        font-size: 2.1rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        margin-bottom: 0.15rem;
-        color: var(--text-color, var(--text-primary)) !important;
-    }
-    .sub-caption {
-        font-size: 0.92rem;
-        color: var(--text-secondary) !important;
-        margin-bottom: 1.25rem;
-    }
-
-    /* Kartu Metrik Estetik */
+    /* Kartu Metrik Estetik (Adaptif ke Light & Dark Mode via inherit) */
     .metric-card {
-        background: var(--card-bg) !important;
-        border: 1px solid var(--card-border) !important;
+        background: rgba(125, 125, 125, 0.06) !important;
+        border: 1px solid rgba(125, 125, 125, 0.18) !important;
         border-radius: 10px;
-        padding: 1.1rem 1.25rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        padding: 1.15rem 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
         height: 100%;
-        color: var(--text-color, var(--text-primary)) !important;
+        color: inherit !important;
     }
     .metric-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        border-color: var(--card-hover-border) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-color: rgba(125, 125, 125, 0.35) !important;
     }
     .metric-tag {
         display: inline-block;
@@ -127,39 +72,41 @@ st.markdown(
         margin-bottom: 0.35rem;
     }
     .metric-title {
-        font-size: 1.02rem;
+        font-size: 1.05rem;
         font-weight: 600;
-        color: var(--text-color, var(--text-primary)) !important;
         margin-bottom: 0.35rem;
+        color: inherit !important;
     }
     .metric-desc {
-        font-size: 0.85rem;
-        color: var(--text-secondary) !important;
+        font-size: 0.86rem;
+        opacity: 0.85;
         line-height: 1.5;
+        color: inherit !important;
     }
 
     /* Kartu Kelas LULC */
     .class-card {
-        background: var(--card-bg) !important;
-        border: 1px solid var(--card-border) !important;
+        background: rgba(125, 125, 125, 0.06) !important;
+        border: 1px solid rgba(125, 125, 125, 0.18) !important;
         border-radius: 8px;
-        padding: 0.9rem;
+        padding: 0.95rem;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        color: var(--text-color, var(--text-primary)) !important;
+        color: inherit !important;
     }
     .class-title {
         font-weight: 600;
         font-size: 0.95rem;
-        color: var(--text-color, var(--text-primary)) !important;
         margin-bottom: 4px;
+        color: inherit !important;
     }
     .class-desc {
         font-size: 0.8rem;
-        color: var(--text-secondary) !important;
+        opacity: 0.85;
         line-height: 1.45;
+        color: inherit !important;
     }
     .class-dot {
         width: 10px;
@@ -172,34 +119,15 @@ st.markdown(
     /* Badge Bagian */
     .section-badge {
         display: inline-block;
-        padding: 2px 9px;
+        padding: 3px 10px;
         font-size: 0.7rem;
         font-weight: 700;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        background: var(--badge-bg) !important;
-        color: var(--badge-text) !important;
+        background: rgba(125, 125, 125, 0.15) !important;
+        color: inherit !important;
         border-radius: 4px;
         margin-bottom: 0.5rem;
-    }
-
-    /* Tab Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 6px;
-        border-bottom: 1px solid var(--card-border);
-        padding-bottom: 4px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-weight: 500;
-        font-size: 0.9rem;
-        padding: 8px 16px;
-        border-radius: 6px;
-        color: var(--text-muted);
-    }
-    .stTabs [aria-selected="true"] {
-        font-weight: 600;
-        color: var(--text-color, var(--text-primary)) !important;
-        background-color: var(--tab-active-bg) !important;
     }
     </style>
     """,
@@ -221,21 +149,39 @@ FITUR = ["B02", "B03", "B04", "B08", "B11", "NDVI", "NDWI", "NDBI"]
 # ------------------------------------------------------------------
 # FUNGSI PEMUAT DATA (di-cache supaya tidak dibaca ulang tiap interaksi)
 # ------------------------------------------------------------------
-@st.cache_resource
 def muat_model():
+    p = DATA / "model_xgb.joblib"
+    mtime = p.stat().st_mtime if p.exists() else 0
+    return _muat_model_disk(mtime)
+
+
+@st.cache_resource
+def _muat_model_disk(mtime):
     return joblib.load(DATA / "model_xgb.joblib")
 
 
-@st.cache_data
 def muat_hasil_peta():
+    p = DATA / "hasil_rgba.png"
+    mtime = p.stat().st_mtime if p.exists() else 0
+    return _muat_hasil_peta_disk(mtime)
+
+
+@st.cache_data
+def _muat_hasil_peta_disk(mtime):
     img = np.array(Image.open(DATA / "hasil_rgba.png").convert("RGBA"))
     with open(DATA / "meta.json") as f:
         meta = json.load(f)
     return img, meta
 
 
-@st.cache_data
 def muat_statistik():
+    p = DATA / "statistik_kelas.csv"
+    mtime = p.stat().st_mtime if p.exists() else 0
+    return _muat_statistik_disk(mtime)
+
+
+@st.cache_data
+def _muat_statistik_disk(mtime):
     return pd.read_csv(DATA / "statistik_kelas.csv")
 
 
@@ -244,7 +190,6 @@ def muat_centroid():
     return pd.read_csv(DATA / "centroid_poligon.csv")
 
 
-@st.cache_data
 def evaluasi_model():
     """Evaluasi pada data uji (split yang sama seperti di notebook)."""
     paket = muat_model()
@@ -288,8 +233,8 @@ with st.sidebar:
 # ------------------------------------------------------------------
 # HALAMAN UTAMA
 # ------------------------------------------------------------------
-st.markdown('<div class="main-title">Klasifikasi Tutupan Lahan Jawa Timur</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-caption">Sentinel-2A + XGBoost | 6 Kelas: Sawah, Bangunan, Danau, Hutan, Mangrove, Laut</div>', unsafe_allow_html=True)
+st.title("Klasifikasi Tutupan Lahan Jawa Timur")
+st.caption("Sentinel-2A + XGBoost | 6 Kelas: Sawah, Bangunan, Danau, Hutan, Mangrove, Laut")
 
 tab_bu, tab_peta, tab_stat, tab_eval, tab_manual = st.tabs(
     [
