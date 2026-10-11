@@ -11,3 +11,4 @@ chapters:
       - file: ekstraksi_fitur_kwanyar
       - file: clustering_k-means
   - file: klasifikasi-sawah
+  - file: klasifikasi_jatim
