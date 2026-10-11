@@ -32,7 +32,8 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------------------
 # KONFIGURASI
 # ------------------------------------------------------------------
-DATA = Path("data")
+BASE = Path(__file__).resolve().parent
+DATA = BASE / "data" if (BASE / "data").is_dir() else BASE
 
 st.set_page_config(page_title="Klasifikasi LULC Jawa Timur", layout="wide")
 
