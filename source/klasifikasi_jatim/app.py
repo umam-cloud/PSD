@@ -37,7 +37,7 @@ DATA = BASE / "data" if (BASE / "data").is_dir() else BASE
 
 st.set_page_config(page_title="Klasifikasi LULC Jawa Timur", layout="wide")
 
-# CSS kustom untuk tampilan dashboard yang bersih, elegan, dan estetik
+# CSS kustom untuk tampilan dashboard yang bersih, elegan, dan adaptif (Light & Dark Mode)
 st.markdown(
     """
     <style>
@@ -47,33 +47,76 @@ st.markdown(
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
+    /* Variabel Adaptif Light/Dark Theme */
+    :root {
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --card-bg: #ffffff;
+        --card-border: #e2e8f0;
+        --card-hover-border: #cbd5e1;
+        --badge-bg: #f1f5f9;
+        --badge-text: #475569;
+        --tab-active-bg: #f8fafc;
+    }
+
+    /* Adaptasi Otomatis ke Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --card-hover-border: rgba(255, 255, 255, 0.25);
+            --badge-bg: rgba(255, 255, 255, 0.08);
+            --badge-text: #e2e8f0;
+            --tab-active-bg: rgba(255, 255, 255, 0.08);
+        }
+    }
+
+    /* Dukungan Tema Gelap Eksplisit Streamlit */
+    [data-theme="dark"], .stApp[data-theme="dark"], [data-testid="stAppViewContainer"][data-theme="dark"] {
+        --text-primary: #f8fafc !important;
+        --text-secondary: #cbd5e1 !important;
+        --text-muted: #94a3b8 !important;
+        --card-bg: rgba(255, 255, 255, 0.05) !important;
+        --card-border: rgba(255, 255, 255, 0.12) !important;
+        --card-hover-border: rgba(255, 255, 255, 0.25) !important;
+        --badge-bg: rgba(255, 255, 255, 0.08) !important;
+        --badge-text: #e2e8f0 !important;
+        --tab-active-bg: rgba(255, 255, 255, 0.08) !important;
+    }
+
     /* Judul Utama */
     .main-title {
         font-size: 2.1rem;
         font-weight: 700;
         letter-spacing: -0.02em;
         margin-bottom: 0.15rem;
-        color: #0f172a;
+        color: var(--text-color, var(--text-primary)) !important;
     }
     .sub-caption {
         font-size: 0.92rem;
-        color: #64748b;
+        color: var(--text-secondary) !important;
         margin-bottom: 1.25rem;
     }
 
     /* Kartu Metrik Estetik */
     .metric-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
         border-radius: 10px;
         padding: 1.1rem 1.25rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
         height: 100%;
+        color: var(--text-color, var(--text-primary)) !important;
     }
     .metric-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border-color: var(--card-hover-border) !important;
     }
     .metric-tag {
         display: inline-block;
@@ -86,25 +129,37 @@ st.markdown(
     .metric-title {
         font-size: 1.02rem;
         font-weight: 600;
-        color: #0f172a;
+        color: var(--text-color, var(--text-primary)) !important;
         margin-bottom: 0.35rem;
     }
     .metric-desc {
         font-size: 0.85rem;
-        color: #64748b;
+        color: var(--text-secondary) !important;
         line-height: 1.5;
     }
 
     /* Kartu Kelas LULC */
     .class-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
         border-radius: 8px;
         padding: 0.9rem;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        color: var(--text-color, var(--text-primary)) !important;
+    }
+    .class-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-color, var(--text-primary)) !important;
+        margin-bottom: 4px;
+    }
+    .class-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary) !important;
+        line-height: 1.45;
     }
     .class-dot {
         width: 10px;
@@ -122,8 +177,8 @@ st.markdown(
         font-weight: 700;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        background: #f1f5f9;
-        color: #475569;
+        background: var(--badge-bg) !important;
+        color: var(--badge-text) !important;
         border-radius: 4px;
         margin-bottom: 0.5rem;
     }
@@ -131,7 +186,7 @@ st.markdown(
     /* Tab Styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--card-border);
         padding-bottom: 4px;
     }
     .stTabs [data-baseweb="tab"] {
@@ -139,12 +194,12 @@ st.markdown(
         font-size: 0.9rem;
         padding: 8px 16px;
         border-radius: 6px;
-        color: #64748b;
+        color: var(--text-muted);
     }
     .stTabs [aria-selected="true"] {
         font-weight: 600;
-        color: #0f172a !important;
-        background-color: #f8fafc;
+        color: var(--text-color, var(--text-primary)) !important;
+        background-color: var(--tab-active-bg) !important;
     }
     </style>
     """,
@@ -379,10 +434,10 @@ with tab_bu:
             st.markdown(
                 f"""
                 <div class="class-card" style="border-top: 3px solid {warna};">
-                    <div style="font-weight: 600; font-size: 0.95rem; color: #0f172a; margin-bottom: 4px;">
+                    <div class="class-title">
                         <span class="class-dot" style="background-color: {warna};"></span>{nama}
                     </div>
-                    <div style="font-size: 0.8rem; color: #64748b; line-height: 1.45;">
+                    <div class="class-desc">
                         {deskripsi_kelas[nama]}
                     </div>
                 </div>
