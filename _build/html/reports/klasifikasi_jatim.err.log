@@ -28,293 +28,153 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-"""
-Klasifikasi Presisi Per Piksel (Folium ImageOverlay) - XGBoost & Rasterio TIF
-"""
-
-import os
-import folium
-from folium.raster_layers import ImageOverlay
-import geopandas as gpd
-import joblib
-import numpy as np
 import pandas as pd
-import rasterio
-from rasterio.features import rasterize
-from rasterio.warp import transform_bounds
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import classification_report, accuracy_score
 
-# =======================================================
-# 1. KONFIGURASI WARNA & FOLDER
-# =======================================================
-DIR_XGB = "./source/klasifikasi_jatim" 
+# ==========================================
+# 1. BACA DATASET & PERSIAPAN
+# ==========================================
+# Sesuaikan nama file CSV dengan hasil ekstraksi terakhir Anda
+df_final = pd.read_csv("./source/klasifikasi_jatim/dataset_ekstraksi_tif_lengkap.csv")
 
-WARNA_KELAS = {
-    "Sawah": "#FFD92F",
-    "Bangunan": "#E41A1C",
-    "Mangrove": "#8E44AD",
-    "Hutan": "#2E7D32",         
-    "Laut": "#0D47A1",          
-    "Danau": "#4FC3F7",
-}
+fitur_kolom = ['B02', 'B03', 'B04', 'B08', 'B11', 'NDVI', 'NDWI', 'NDBI']
+X = df_final[fitur_kolom]
+y = df_final['label']
+nama_kelas = ['Sawah', 'Bangunan', 'Danau', 'Hutan', 'Mangrove', 'Laut']
 
-def hex_ke_rgb(h):
-    h = h.lstrip("#")
-    return [int(h[i : i + 2], 16) for i in (0, 2, 4)]
-
-# =======================================================
-# 2. MUAT MODEL XGBOOST & TITIK SAMPEL
-# =======================================================
-print("Memuat model XGBoost...")
-paket = joblib.load(f"{DIR_XGB}/model_xgb.joblib")
-model_xgb = paket["model"]
-fitur = paket["fitur"] # ['B02', 'B03', 'B04', 'B08', 'B11', 'NDVI', 'NDWI', 'NDBI']
-encoder = paket["encoder"] 
-cen = pd.read_csv(f"{DIR_XGB}/centroid_poligon.csv")
-
-# =======================================================
-# 3. BACA DATA SATELIT ASLI (.TIF) & HITUNG INDEKS
-# =======================================================
-print("Membaca file TIF dan menghitung indeks spektral...")
-FILE_TIF = "sentinel2_6kelas_visual_full.tif"
-
-with rasterio.open(FILE_TIF) as src:
-    # Mengambil resolusi gambar
-    H, W = src.height, src.width
-    
-    # Membaca kelima band (B02, B03, B04, B08, B11)
-    B02 = src.read(1).astype(np.float32)
-    B03 = src.read(2).astype(np.float32)
-    B04 = src.read(3).astype(np.float32)
-    B08 = src.read(4).astype(np.float32)
-    B11 = src.read(5).astype(np.float32)
-    
-    # Ambil batas peta dan ubah ke koordinat GPS (Lat/Lon) untuk Folium
-    bounds_latlon = transform_bounds(src.crs, "EPSG:4326", *src.bounds)
-    lon_w, lat_s, lon_e, lat_n = bounds_latlon
-    
-    transform_tif = src.transform
-    crs_tif = src.crs
-
-# Hindari error pembagian dengan nol
-np.seterr(divide='ignore', invalid='ignore')
-
-# Hitung Indeks
-NDVI = (B08 - B04) / (B08 + B04)
-NDWI = (B03 - B08) / (B03 + B08)
-NDBI = (B11 - B08) / (B11 + B08)
-
-# Bersihkan nilai tak terhingga (infinity/NaN) menjadi 0
-NDVI = np.nan_to_num(NDVI, nan=0.0, posinf=0.0, neginf=0.0)
-NDWI = np.nan_to_num(NDWI, nan=0.0, posinf=0.0, neginf=0.0)
-NDBI = np.nan_to_num(NDBI, nan=0.0, posinf=0.0, neginf=0.0)
-
-# =======================================================
-# 4. MASKING DARATAN JAWA TIMUR
-# =======================================================
-print("Melakukan masking daratan...")
-prov = gpd.read_file("jawa_timur_provinsi.geojson")
-
-# Pastikan koordinat shapefile Jatim sama dengan koordinat TIF
-if prov.crs != crs_tif:
-    prov = prov.to_crs(crs_tif)
-
-# Ubah poligon menjadi piksel (1 untuk daratan, 0 untuk laut)
-mask_daratan = rasterize(
-    [(geom, 1) for geom in prov.geometry],
-    out_shape=(H, W),
-    transform=transform_tif,
-    fill=0,
-    dtype=np.uint8,
+# Pemisahan dataset (80% Latih, 20% Uji)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-# =======================================================
-# 5. PREDIKSI KELAS DENGAN XGBOOST
-# =======================================================
-print("Mengeksekusi model XGBoost ke jutaan piksel...")
-# Flatten (ratakan) matriks 2D menjadi 1D untuk dimasukkan ke model
-df_pred = pd.DataFrame({
-    'B02': B02.flatten(), 'B03': B03.flatten(), 'B04': B04.flatten(),
-    'B08': B08.flatten(), 'B11': B11.flatten(),
-    'NDVI': NDVI.flatten(), 'NDWI': NDWI.flatten(), 'NDBI': NDBI.flatten()
-})
+print(f"Data Pelatihan: {len(X_train)} Sampel")
+print(f"Data Pengujian: {len(X_test)} Sampel\n")
 
-mask_flat = mask_daratan.flatten()
-# Cari area yang datanya valid (tidak kosong)
-valid_data = B02.flatten() > 0 
+# Dictionary untuk menyimpan skor akurasi
+skor_akurasi = {}
 
-# Kita hanya memprediksi area yang Valid DAN merupakan Daratan
-idx_daratan_valid = (mask_flat == 1) & valid_data
+# ==========================================
+# 2. MODEL RANDOM FOREST
+# ==========================================
+print("Melatih Model Random Forest...")
+model_rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+model_rf.fit(X_train, y_train)
+y_pred_rf = model_rf.predict(X_test)
+skor_akurasi['Random Forest'] = accuracy_score(y_test, y_pred_rf)
 
-# Lakukan prediksi
-preds_num = model_xgb.predict(df_pred[idx_daratan_valid][fitur])
-preds_teks = encoder.inverse_transform(preds_num)
-preds_teks_title = np.array([str(p).title() for p in preds_teks]) # Pastikan Title Case
+print("\n--- Evaluasi Random Forest ---")
+print(classification_report(y_test, y_pred_rf, target_names=nama_kelas))
 
-# =======================================================
-# 6. PEMBUATAN LAPISAN WARNA (RGBA)
-# =======================================================
-print("Mewarnai hasil prediksi...")
-# Buat kanvas kosong transparan (Alpha = 0)
-rgba_flat = np.zeros((H * W, 4), dtype=np.uint8)
+# ==========================================
+# 3. MODEL XGBOOST
+# ==========================================
+print("Melatih Model XGBoost...")
+model_xgb = XGBClassifier(n_estimators=100, learning_rate=0.1, random_state=42, n_jobs=-1)
+model_xgb.fit(X_train, y_train)
+y_pred_xgb = model_xgb.predict(X_test)
+skor_akurasi['XGBoost'] = accuracy_score(y_test, y_pred_xgb)
 
-# 1. Warnai Laut (Valid data TIF, tapi di luar mask daratan)
-idx_laut_valid = (mask_flat == 0) & valid_data
-rgba_flat[idx_laut_valid, :3] = hex_ke_rgb(WARNA_KELAS["Laut"])
-rgba_flat[idx_laut_valid, 3] = 225  # Alpha (Opasitas)
+print("\n--- Evaluasi XGBoost ---")
+print(classification_report(y_test, y_pred_xgb, target_names=nama_kelas))
 
-# 2. Warnai Daratan sesuai tebakan XGBoost
-for k, col in WARNA_KELAS.items():
-    if k == "Laut": continue
-    # Cari posisi piksel daratan yang tebakannya adalah kelas 'k'
-    idx_kelas = np.zeros(len(preds_teks_title), dtype=bool)
-    idx_kelas[preds_teks_title == k] = True
-    
-    # Petakan kembali indeks kelas ke indeks array global (rgba_flat)
-    posisi_global = np.where(idx_daratan_valid)[0][idx_kelas]
-    
-    rgba_flat[posisi_global, :3] = hex_ke_rgb(col)
-    rgba_flat[posisi_global, 3] = 225 # Alpha
+# ==========================================
+# 4. MODEL SUPPORT VECTOR MACHINE (SVM)
+# ==========================================
+print("Melatih Model SVM...")
+# SVM menggunakan StandardScaler agar performanya maksimal
+model_svm = make_pipeline(StandardScaler(), SVC(kernel='rbf', C=1.0, random_state=42))
+model_svm.fit(X_train, y_train)
+y_pred_svm = model_svm.predict(X_test)
+skor_akurasi['SVM'] = accuracy_score(y_test, y_pred_svm)
 
-# Kembalikan bentuk array ke format 2D gambar
-rgba_img = rgba_flat.reshape((H, W, 4))
+print("\n--- Evaluasi SVM ---")
+print(classification_report(y_test, y_pred_svm, target_names=nama_kelas))
 
-# =======================================================
-# 7. BANGUN PETA FOLIUM
-# =======================================================
-print("Menyusun peta Folium...")
-pusat = [(lat_s + lat_n) / 2, (lon_w + lon_e) / 2]
-peta = folium.Map(location=pusat, zoom_start=8, tiles=None, control_scale=True)
-
-folium.TileLayer(
-    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attr="Tiles &copy; Esri", name="Esri Satellite", max_zoom=19, overlay=False,
-).add_to(peta)
-
-folium.TileLayer(
-    tiles="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
-    attr="Google Hybrid", name="Google Hybrid", max_zoom=20, overlay=False, show=False,
-).add_to(peta)
-
-# Pasang gambar RGBA di atas peta
-batas_peta = [[lat_s, lon_w], [lat_n, lon_e]]
-ImageOverlay(
-    image=rgba_img,
-    bounds=batas_peta,
-    opacity=0.65,
-    name="Hasil Klasifikasi XGBoost (TIF Asli)",
-    zindex=5,
-).add_to(peta)
-
-# Tambahkan Titik Sampel
-for nama in WARNA_KELAS.keys():
-    grup = folium.FeatureGroup(name=f"Titik Sampel: {nama}", show=False)
-    for _, r in cen[cen['label_teks'] == nama].iterrows():
-        folium.CircleMarker(
-            [r["lat_centroid"], r["lon_centroid"]],
-            radius=4, color="white", weight=1, fill=True,
-            fill_color=WARNA_KELAS[nama], fill_opacity=1,
-            popup=f"{nama}",
-        ).add_to(grup)
-    grup.add_to(peta)
-
-# Legenda
-item_legenda = "".join(
-    f'<div style="margin:2px 0"><span'
-    f' style="display:inline-block;width:14px;height:14px;background:{WARNA_KELAS[k]};border:1px'
-    f' solid #333;margin-right:6px;vertical-align:middle"></span>{k}</div>'
-    for k in WARNA_KELAS.keys()
-)
-legenda_html = (
-    f'<div style="position:fixed;bottom:30px;left:30px;z-index:9999;background:rgba(255,255,255,0.95);'
-    f'padding:10px 14px;border:1px solid #888;border-radius:6px;font:12px sans-serif;">'
-    f'<b>Legenda LULC</b><hr style="margin:5px 0">{item_legenda}</div>'
-)
-peta.get_root().html.add_child(folium.Element(legenda_html))
-
-folium.LayerControl(collapsed=False).add_to(peta)
-peta.save("hasil_klasifikasi_xgboost_asli.html")
-print("Selesai! Peta berhasil disimpan.")
-
-# Tampilkan di notebook
-peta
+# ==========================================
+# 5. KESIMPULAN PERBANDINGAN AKURASI
+# ==========================================
+print("\n==========================================")
+print("   PERBANDINGAN AKURASI KETIGA MODEL")
+print("==========================================")
+for model, skor in sorted(skor_akurasi.items(), key=lambda item: item[1], reverse=True):
+    print(f"{model:<15}: {skor * 100:.2f}%")
+print("==========================================")
 ------------------
 
------ stdout -----
-Memuat model XGBoost...
-------------------
 
 [31m---------------------------------------------------------------------------[39m
-[31mXGBoostError[39m                              Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 38[39m
-[32m     34[39m [38;5;66;03m# =======================================================[39;00m
-[32m     35[39m [38;5;66;03m# 2. MUAT MODEL XGBOOST & TITIK SAMPEL[39;00m
-[32m     36[39m [38;5;66;03m# =======================================================[39;00m
-[32m     37[39m print([33m"Memuat model XGBoost..."[39m)
-[32m---> [39m[32m38[39m paket = joblib.load(f"{DIR_XGB}/model_xgb.joblib")
-[32m     39[39m model_xgb = paket[[33m"model"[39m]
-[32m     40[39m fitur = paket[[33m"fitur"[39m] [38;5;66;03m# ['B02', 'B03', 'B04', 'B08', 'B11', 'NDVI', 'NDWI', 'NDBI'][39;00m
-[32m     41[39m encoder = paket[[33m"encoder"[39m]
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 16[39m
+[32m     12[39m [38;5;66;03m# ==========================================[39;00m
+[32m     13[39m [38;5;66;03m# 1. BACA DATASET & PERSIAPAN[39;00m
+[32m     14[39m [38;5;66;03m# ==========================================[39;00m
+[32m     15[39m [38;5;66;03m# Sesuaikan nama file CSV dengan hasil ekstraksi terakhir Anda[39;00m
+[32m---> [39m[32m16[39m df_final = pd.read_csv([33m"./source/klasifikasi_jatim/dataset_ekstraksi_tif_lengkap.csv"[39m)
+[32m     17[39m 
+[32m     18[39m fitur_kolom = [[33m'B02'[39m, [33m'B03'[39m, [33m'B04'[39m, [33m'B08'[39m, [33m'B11'[39m, [33m'NDVI'[39m, [33m'NDWI'[39m, [33m'NDBI'[39m]
+[32m     19[39m X = df_final[fitur_kolom]
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\joblib\numpy_pickle.py:749[39m, in [36mload[39m[34m(filename, mmap_mode, ensure_native_byte_order)[39m
-[32m    744[39m                 [38;5;28;01mreturn[39;00m load_compatibility(fobj)
-[32m    746[39m             [38;5;66;03m# A memory-mapped array has to be mapped with the endianness[39;00m
-[32m    747[39m             [38;5;66;03m# it has been written with. Other arrays are coerced to the[39;00m
-[32m    748[39m             [38;5;66;03m# native endianness of the host system.[39;00m
-[32m--> [39m[32m749[39m             obj = [30;43m_unpickle[39;49m[30;43m([39;49m
-[32m    750[39m [30;43m                [39;49m[30;43mfobj[39;49m[30;43m,[39;49m
-[32m    751[39m [30;43m                [39;49m[30;43mensure_native_byte_order[39;49m[30;43m=[39;49m[30;43mensure_native_byte_order[39;49m[30;43m,[39;49m
-[32m    752[39m [30;43m                [39;49m[30;43mfilename[39;49m[30;43m=[39;49m[30;43mfilename[39;49m[30;43m,[39;49m
-[32m    753[39m [30;43m                [39;49m[30;43mmmap_mode[39;49m[30;43m=[39;49m[30;43mvalidated_mmap_mode[39;49m[30;43m,[39;49m
-[32m    754[39m [30;43m            [39;49m[30;43m)[39;49m
-[32m    756[39m [38;5;28;01mreturn[39;00m obj
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1026[39m, in [36mread_csv[39m[34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)[39m
+[32m   1013[39m kwds_defaults = _refine_defaults_read(
+[32m   1014[39m     dialect,
+[32m   1015[39m     delimiter,
+[32m   (...)[39m[32m   1022[39m     dtype_backend=dtype_backend,
+[32m   1023[39m )
+[32m   1024[39m kwds.update(kwds_defaults)
+[32m-> [39m[32m1026[39m [38;5;28;01mreturn[39;00m [30;43m_read[39;49m[30;43m([39;49m[30;43mfilepath_or_buffer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mkwds[39;49m[30;43m)[39;49m
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\joblib\numpy_pickle.py:626[39m, in [36m_unpickle[39m[34m(fobj, ensure_native_byte_order, filename, mmap_mode)[39m
-[32m    624[39m obj = [38;5;28;01mNone[39;00m
-[32m    625[39m [38;5;28;01mtry[39;00m:
-[32m--> [39m[32m626[39m     obj = [30;43munpickler[39;49m[30;43m.[39;49m[30;43mload[39;49m[30;43m([39;49m[30;43m)[39;49m
-[32m    627[39m     [38;5;28;01mif[39;00m unpickler.compat_mode:
-[32m    628[39m         warnings.warn(
-[32m    629[39m             [33m"[39m[33mThe file [39m[33m'[39m[38;5;132;01m%s[39;00m[33m'[39m[33m has been generated with a [39m[33m"[39m
-[32m    630[39m             [33m"[39m[33mjoblib version less than 0.10. [39m[33m"[39m
-[32m   (...)[39m[32m    633[39m             stacklevel=[32m3[39m,
-[32m    634[39m         )
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:620[39m, in [36m_read[39m[34m(filepath_or_buffer, kwds)[39m
+[32m    617[39m _validate_names(kwds.get([33m"[39m[33mnames[39m[33m"[39m, [38;5;28;01mNone[39;00m))
+[32m    619[39m [38;5;66;03m# Create the parser.[39;00m
+[32m--> [39m[32m620[39m parser = [30;43mTextFileReader[39;49m[30;43m([39;49m[30;43mfilepath_or_buffer[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwds[39;49m[30;43m)[39;49m
+[32m    622[39m [38;5;28;01mif[39;00m chunksize [38;5;129;01mor[39;00m iterator:
+[32m    623[39m     [38;5;28;01mreturn[39;00m parser
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\pickle.py:1255[39m, in [36m_Unpickler.load[39m[34m(self)[39m
-[32m   1253[39m             [38;5;28;01mraise[39;00m [38;5;167;01mEOFError[39;00m
-[32m   1254[39m         [38;5;28;01massert[39;00m [38;5;28misinstance[39m(key, bytes_types)
-[32m-> [39m[32m1255[39m         [30;43mdispatch[39;49m[30;43m[[39;49m[30;43mkey[39;49m[30;43m[[39;49m[30;43m0[39;49m[30;43m][39;49m[30;43m][39;49m[30;43m([39;49m[30;43mself[39;49m[30;43m)[39;49m
-[32m   1256[39m [38;5;28;01mexcept[39;00m _Stop [38;5;28;01mas[39;00m stopinst:
-[32m   1257[39m     [38;5;28;01mreturn[39;00m stopinst.value
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1620[39m, in [36mTextFileReader.__init__[39m[34m(self, f, engine, **kwds)[39m
+[32m   1617[39m     [38;5;28mself[39m.options[[33m"[39m[33mhas_index_names[39m[33m"[39m] = kwds[[33m"[39m[33mhas_index_names[39m[33m"[39m]
+[32m   1619[39m [38;5;28mself[39m.handles: IOHandles | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m
+[32m-> [39m[32m1620[39m [38;5;28mself[39m._engine = [30;43mself[39;49m[30;43m.[39;49m[30;43m_make_engine[39;49m[30;43m([39;49m[30;43mf[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mengine[39;49m[30;43m)[39;49m
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\joblib\numpy_pickle.py:446[39m, in [36mNumpyUnpickler.load_build[39m[34m(self)[39m
-[32m    438[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mload_build[39m([38;5;28mself[39m):
-[32m    439[39m [38;5;250m    [39m[33;03m"""Called to set the state of a newly created object.[39;00m
-[32m    440[39m 
-[32m    441[39m [33;03m    We capture it to replace our place-holder objects, NDArrayWrapper or[39;00m
-[32m   (...)[39m[32m    444[39m [33;03m    NDArrayWrapper is used for backward compatibility with joblib <= 0.9.[39;00m
-[32m    445[39m [33;03m    """[39;00m
-[32m--> [39m[32m446[39m     [30;43mUnpickler[39;49m[30;43m.[39;49m[30;43mload_build[39;49m[30;43m([39;49m[30;43mself[39;49m[30;43m)[39;49m
-[32m    448[39m     [38;5;66;03m# For backward compatibility, we support NDArrayWrapper objects.[39;00m
-[32m    449[39m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m([38;5;28mself[39m.stack[-[32m1[39m], (NDArrayWrapper, NumpyArrayWrapper)):
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\parsers\readers.py:1880[39m, in [36mTextFileReader._make_engine[39m[34m(self, f, engine)[39m
+[32m   1878[39m     [38;5;28;01mif[39;00m [33m"[39m[33mb[39m[33m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m mode:
+[32m   1879[39m         mode += [33m"[39m[33mb[39m[33m"[39m
+[32m-> [39m[32m1880[39m [38;5;28mself[39m.handles = [30;43mget_handle[39;49m[30;43m([39;49m
+[32m   1881[39m [30;43m    [39;49m[30;43mf[39;49m[30;43m,[39;49m
+[32m   1882[39m [30;43m    [39;49m[30;43mmode[39;49m[30;43m,[39;49m
+[32m   1883[39m [30;43m    [39;49m[30;43mencoding[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mencoding[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1884[39m [30;43m    [39;49m[30;43mcompression[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mcompression[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1885[39m [30;43m    [39;49m[30;43mmemory_map[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mmemory_map[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mFalse[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1886[39m [30;43m    [39;49m[30;43mis_text[39;49m[30;43m=[39;49m[30;43mis_text[39;49m[30;43m,[39;49m
+[32m   1887[39m [30;43m    [39;49m[30;43merrors[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mencoding_errors[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m"[39;49m[30;43mstrict[39;49m[30;43m"[39;49m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1888[39m [30;43m    [39;49m[30;43mstorage_options[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43moptions[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mstorage_options[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43;01mNone[39;49;00m[30;43m)[39;49m[30;43m,[39;49m
+[32m   1889[39m [30;43m[39;49m[30;43m)[39;49m
+[32m   1890[39m [38;5;28;01massert[39;00m [38;5;28mself[39m.handles [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m
+[32m   1891[39m f = [38;5;28mself[39m.handles.handle
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\pickle.py:1759[39m, in [36m_Unpickler.load_build[39m[34m(self)[39m
-[32m   1757[39m setstate = [38;5;28mgetattr[39m(inst, [33m"[39m[33m__setstate__[39m[33m"[39m, _NoValue)
-[32m   1758[39m [38;5;28;01mif[39;00m setstate [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m _NoValue:
-[32m-> [39m[32m1759[39m     [30;43msetstate[39;49m[30;43m([39;49m[30;43mstate[39;49m[30;43m)[39;49m
-[32m   1760[39m     [38;5;28;01mreturn[39;00m
-[32m   1761[39m slotstate = [38;5;28;01mNone[39;00m
+[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\common.py:873[39m, in [36mget_handle[39m[34m(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)[39m
+[32m    868[39m [38;5;28;01melif[39;00m [38;5;28misinstance[39m(handle, [38;5;28mstr[39m):
+[32m    869[39m     [38;5;66;03m# Check whether the filename is to be opened in binary mode.[39;00m
+[32m    870[39m     [38;5;66;03m# Binary mode does not support 'encoding' and 'newline'.[39;00m
+[32m    871[39m     [38;5;28;01mif[39;00m ioargs.encoding [38;5;129;01mand[39;00m [33m"[39m[33mb[39m[33m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m ioargs.mode:
+[32m    872[39m         [38;5;66;03m# Encoding[39;00m
+[32m--> [39m[32m873[39m         handle = [30;43mopen[39;49m[30;43m([39;49m
+[32m    874[39m [30;43m            [39;49m[30;43mhandle[39;49m[30;43m,[39;49m
+[32m    875[39m [30;43m            [39;49m[30;43mioargs[39;49m[30;43m.[39;49m[30;43mmode[39;49m[30;43m,[39;49m
+[32m    876[39m [30;43m            [39;49m[30;43mencoding[39;49m[30;43m=[39;49m[30;43mioargs[39;49m[30;43m.[39;49m[30;43mencoding[39;49m[30;43m,[39;49m
+[32m    877[39m [30;43m            [39;49m[30;43merrors[39;49m[30;43m=[39;49m[30;43merrors[39;49m[30;43m,[39;49m
+[32m    878[39m [30;43m            [39;49m[30;43mnewline[39;49m[30;43m=[39;49m[30;43m"[39;49m[30;43m"[39;49m[30;43m,[39;49m
+[32m    879[39m [30;43m        [39;49m[30;43m)[39;49m
+[32m    880[39m     [38;5;28;01melse[39;00m:
+[32m    881[39m         [38;5;66;03m# Binary mode[39;00m
+[32m    882[39m         handle = [38;5;28mopen[39m(handle, ioargs.mode)
 
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\xgboost\core.py:1906[39m, in [36mBooster.__setstate__[39m[34m(self, state)[39m
-[32m   1904[39m     length = c_bst_ulong([38;5;28mlen[39m(buf))
-[32m   1905[39m     ptr = (ctypes.c_char * [38;5;28mlen[39m(buf)).from_buffer(buf)
-[32m-> [39m[32m1906[39m     [30;43m_check_call[39;49m[30;43m([39;49m[30;43m_LIB[39;49m[30;43m.[39;49m[30;43mXGBoosterUnserializeFromBuffer[39;49m[30;43m([39;49m[30;43mhandle[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mptr[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mlength[39;49m[30;43m)[39;49m[30;43m)[39;49m
-[32m   1907[39m     state[[33m"[39m[33mhandle[39m[33m"[39m] = handle
-[32m   1908[39m [38;5;28mself[39m.[34m__dict__[39m.update(state)
-
-[36mFile [39m[32m~\AppData\Local\Programs\Python\Python313\Lib\site-packages\xgboost\_c_api.py:190[39m, in [36m_check_call[39m[34m(ret)[39m
-[32m    188[39m [38;5;250m[39m[33;03m"""Check the return value of C API call."""[39;00m
-[32m    189[39m [38;5;28;01mif[39;00m ret != [32m0[39m:
-[32m--> [39m[32m190[39m     [38;5;28;01mraise[39;00m XGBoostError(py_str(_LIB.XGBGetLastError()))
-
-[31mXGBoostError[39m: input stream corrupted
+[31mFileNotFoundError[39m: [Errno 2] No such file or directory: './source/klasifikasi_jatim/dataset_ekstraksi_tif_lengkap.csv'
 

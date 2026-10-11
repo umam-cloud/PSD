@@ -51,6 +51,20 @@ Oleh karena itu, pemanfaatan teknologi **Penginderaan Jauh (*Remote Sensing*)** 
 | **Efisiensi Komputasi** | Waktu Inferensi Spasial Penuh | Mampu mengklasifikasikan jutaan piksel citra satelit secara cepat melalui paralelisasi komputasi (`n_jobs=-1`) dan *raster masking*. |
 | **Penyajian Produk** | *Interactive Web Map* | Menghasilkan peta mandiri berbasis Folium yang dapat dibuka di peramban web tanpa memerlukan instalasi perangkat lunak GIS khusus. |
 
+### 5. Deployment Aplikasi Web (Streamlit Cloud)
+
+Sebagai implementasi produk akhir (*data product delivery*) yang siap digunakan oleh pengambil kebijakan maupun publik, sistem klasifikasi tutupan lahan ini telah di-*deploy* secara terbuka ke platform **Streamlit Cloud**.
+
+Dashboard interaktif ini menyajikan visualisasi peta tutupan lahan resolusi tinggi, statistik luas wilayah per kelas, evaluasi matriks model, serta simulasi prediksi manual secara *on-the-fly*. Aplikasi dapat diakses melalui tautan berikut:
+
+- **URL Aplikasi Web:** [https://24-209-klasifikasijawatimur.streamlit.app/](https://24-209-klasifikasijawatimur.streamlit.app/)
+
+Fitur utama yang tersedia pada aplikasi web:
+1. **Peta Interaktif:** Tampilan *overlay* hasil klasifikasi XGBoost di atas citra satelit resolusi tinggi dengan pengaturan transparansi (*opacity*) serta visualisasi titik sampel *ground truth*.
+2. **Statistik Luas LULC:** Tabel kalkulasi luas wilayah (km²) dan proporsi persentase tiap kelas tutupan lahan yang dilengkapi fitur unduh data (CSV).
+3. **Evaluasi Performa Model:** Laporan klasifikasi (*Classification Report*) dan matriks konfusi (*Confusion Matrix*) komprehensif pada subset data uji.
+4. **Prediksi Manual:** Pengujian tebakan kelas secara instan berdasarkan input nilai reflektansi spektral pita Sentinel-2A.
+
 ---
 
 Bagian berikut mendokumentasikan keseluruhan alur kerja teknis, mulai dari perancangan sampel *ground truth*, ekstraksi fitur piksel citra Sentinel-2A (Level-2A), komparasi algoritma, pelatihan model XGBoost, hingga visualisasi peta interaktif per-piksel.
@@ -208,7 +222,7 @@ from sklearn.metrics import classification_report, accuracy_score
 # 1. BACA DATASET & PERSIAPAN
 # ==========================================
 # Sesuaikan nama file CSV dengan hasil ekstraksi terakhir Anda
-df_final = pd.read_csv("./source/klasifikasi_jatim/dataset_ekstraksi_tif_lengkap.csv")
+df_final = pd.read_csv("./source/klasifikasi_jatim/data/dataset_ekstraksi_tif_lengkap.csv")
 
 fitur_kolom = ['B02', 'B03', 'B04', 'B08', 'B11', 'NDVI', 'NDWI', 'NDBI']
 X = df_final[fitur_kolom]
@@ -304,7 +318,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 # 1. BACA DATASET & PREPROCESSING
 # ==========================================
 # Ganti dengan nama file CSV terakhir Anda (contoh: dataset_ekstraksi_tif_lengkap.csv)
-df_final = pd.read_csv("./source/klasifikasi_jatim/dataset_ekstraksi_tif_lengkap.csv")
+df_final = pd.read_csv("./source/klasifikasi_jatim/data/dataset_ekstraksi_tif_lengkap.csv")
 
 # Preprocessing: Pastikan tidak ada nilai infinity (tak terhingga) atau NaN yang tersisa
 # df_final.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -429,7 +443,7 @@ from rasterio.warp import transform_bounds
 # =======================================================
 # 1. KONFIGURASI WARNA & FOLDER
 # =======================================================
-DIR_XGB = "./source/klasifikasi_jatim" 
+DIR_XGB = "./source/klasifikasi_jatim/data" 
 
 WARNA_KELAS = {
     "Sawah": "#FFD92F",
